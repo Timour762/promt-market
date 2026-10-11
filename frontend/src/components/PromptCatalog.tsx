@@ -1,0 +1,10 @@
+"use client";
+import { useState } from 'react';
+import catalog from '../data/catalog.json';
+const categories=['Все промпты',...new Set(catalog.map(p=>p.category))];
+export default function PromptCatalog(){
+const [query,setQuery]=useState('');const [category,setCategory]=useState('Все промпты');
+const filtered=catalog.filter(p=>(category==='Все промпты'||p.category===category)&&`${p.title} ${p.description} ${p.category}`.toLowerCase().includes(query.toLowerCase()));
+
+return <section id="catalog" className="catalog"><div className="section-heading"><div><p className="eyebrow">КОЛЛЕКЦИЯ / 01</p><h2>Для того, что вы делаете</h2></div><span className="count">6 промптов · 6 направлений</span></div><div className="tools"><label className="search"><span aria-hidden="true">⌕</span><input aria-label="Поиск промптов" placeholder="Найти промпт под вашу задачу" value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<button aria-label="Очистить поиск" onClick={()=>setQuery('')}>×</button>}</label><span className="catalog-note">Цены и продажи готовятся к запуску</span></div><div className="filters" aria-label="Категории">{categories.map(c=><button key={c} aria-pressed={category===c} className={category===c?'active':''} onClick={()=>setCategory(c)}>{c}</button>)}</div><div className="grid">{filtered.map((p)=><article className={`card ${p.id}`} key={p.id}><div className="cover"><span className="cover-label">PROMPT / {String(catalog.indexOf(p)+1).padStart(2,'0')}</span><span className="cover-symbol" aria-hidden="true">{p.symbol}</span><span className="cover-bottom">{p.category}<span>↗</span></span></div><div className="card-content"><span className="category">{p.category}</span><h3>{p.title}</h3><p>{p.description}</p><div className="card-bottom"><span>Скоро в продаже</span><a className="card-link" href={`/prompts/${p.id}`}>Подробнее ↗</a></div></div></article>)}</div>{!filtered.length&&<div className="empty"><h3>Подходящих промптов пока нет</h3><p>Попробуйте другую задачу или сбросьте фильтры.</p><button onClick={()=>{setQuery('');setCategory('Все промпты')}}>Показать всю коллекцию</button></div>}</section>;
+}
