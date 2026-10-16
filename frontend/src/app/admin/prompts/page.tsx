@@ -1,0 +1,13 @@
+import { adminFetch } from '../../../lib/admin';
+import { formatPrice, statusLabels, type PromptList } from '../../../lib/admin-types';
+type Props = { searchParams: Promise<{ q?: string; status?: string; page?: string }> };
+export default async function AdminPrompts({ searchParams }: Props) {
+  const search = await searchParams;
+  const q = typeof search.q === 'string' ? search.q.slice(0,200) : '';
+  const status = ['draft','published','archived'].includes(search.status ?? '') ? search.status! : '';
+  const page = Math.min(100000,Math.max(1,Number.parseInt(search.page ?? '1',10) || 1));
+  const params = new URLSearchParams({ q, offset: String((page-1)*50), limit: '50' }); if (status) params.set('status',status);
+  const result = await adminFetch<PromptList>(`prompts?${params}`);
+  function href(next: number) { const values = new URLSearchParams({ q,status,page:String(next) }); return `/admin/prompts?${values}`; }
+  return <><div className="admin-heading"><div><p className="eyebrow">КАТАЛОГ</p><h1>Товары</h1></div><a className="primary" href="/admin/prompts/new">Добавить промпт <span>＋</span></a></div><form className="admin-filters" action="/admin/prompts"><label>Название<input name="q" defaultValue={q} maxLength={200} placeholder="Найти товар"/></label><label>Состояние<select name="status" defaultValue={status}><option value="">Все состояния</option><option value="published">В каталоге</option><option value="draft">Черновики</option><option value="archived">Архив</option></select></label><button className="secondary-button" type="submit">Показать</button></form><p className="field-hint">Найдено: {result.total}</p><div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Товар</th><th>Категория</th><th>Цена</th><th>Состояние</th><th><span className="sr-only">Действие</span></th></tr></thead><tbody>{result.items.map(prompt=><tr key={prompt.id}><td><a className="table-title" href={`/admin/prompts/${prompt.id}`}>{prompt.title}</a><span className="table-slug">/prompts/{prompt.id}</span></td><td>{prompt.category}</td><td>{formatPrice(prompt.price_minor)}</td><td><span className={`status-badge ${prompt.status}`}>{statusLabels[prompt.status]}</span></td><td><a className="card-link" href={`/admin/prompts/${prompt.id}`} aria-label={`Редактировать ${prompt.title}`}>Изменить ↗</a></td></tr>)}</tbody></table></div>{!result.items.length&&<div className="empty"><h2>Товаров по этим условиям нет</h2><a className="card-link" href="/admin/prompts">Сбросить фильтры</a></div>}<nav className="pagination" aria-label="Страницы товаров">{page>1&&<a href={href(page-1)}>← Назад</a>}<span>Страница {page}</span>{page*50<result.total&&<a href={href(page+1)}>Далее →</a>}</nav></>;
+}

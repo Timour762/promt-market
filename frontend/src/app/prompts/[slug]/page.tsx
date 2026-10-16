@@ -1,6 +1,14 @@
+import PromptGuide from '../../../components/PromptGuide';
+import { promptGuides } from '../../../lib/prompt-guides';
+import Image from 'next/image';
+import { covers } from '../../../components/PromptCover';
+import StoreFooter from '../../../components/StoreFooter';
+import PromptCover from '../../../components/PromptCover';
+import { OrderButton } from '../../../components/OrderActions';
+import SiteHeader from '../../../components/SiteHeader';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import catalog from '../../../data/catalog.json';
+import { getPrompt } from '../../../lib/catalog';
 
 type PageProps = { params: Promise<{ slug: string }> };
 const inputs: Record<string, string[]> = {
@@ -14,39 +22,18 @@ const inputs: Record<string, string[]> = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const prompt = catalog.find(item => item.id === slug);
+  const prompt = await getPrompt(slug);
   return prompt ? { title: `${prompt.title} | ПромтМаркет`, description: prompt.description } : { title: 'Промпт не найден | ПромтМаркет' };
 }
 
 export default async function PromptPage({ params }: PageProps) {
   const { slug } = await params;
-  const prompt = catalog.find(item => item.id === slug);
+  const prompt = await getPrompt(slug);
   if (!prompt) notFound();
   const isGenerator = prompt.id === 'image' || prompt.id === 'video';
-  return <>
-    <a className="skip" href="#prompt-content">Перейти к описанию</a>
-    <header>
-      <a className="logo" href="/"><span className="mark">п<span>м</span></span>ПромтМаркет<span className="beta">Первая коллекция</span></a>
-      <nav aria-label="Навигация"><a href="/catalog">Каталог</a><a href="/catalog#how">Как это работает ↗</a></nav>
-    </header>
-    <main id="prompt-content" className="product-page">
-      <nav className="breadcrumbs" aria-label="Хлебные крошки"><a href="/">Главная</a><span aria-hidden="true">/</span><a href="/catalog">Каталог</a><span aria-hidden="true">/</span><span>{prompt.category}</span></nav>
-      <div className="product-layout">
-        <article className="product-description">
-          <p className="eyebrow">{prompt.category}</p>
-          <h1>{prompt.title}</h1>
-          <p className="product-lead">{prompt.description}</p>
-          <section className="product-section"><h2>Что вы получите</h2><p>{prompt.result}</p><p>Готовую инструкцию с полями для ваших исходных данных. Она помогает задать структуру ответа AI и сформулировать задачу.</p></section>
-          <section className="product-section"><h2>Что подготовить</h2><ul>{inputs[prompt.id].map(input => <li key={input}>{input}</li>)}</ul></section>
-          <section className="product-section"><h2>Как использовать</h2><ol><li>После покупки откройте полный текст в своей библиотеке.</li><li>Замените поля в квадратных скобках своими данными.</li><li>Вставьте заполненную инструкцию в текстового AI-помощника.</li><li>Уточните ответ при необходимости и проверьте результат.</li></ol>{isGenerator && <p className="usage-note">Этот товар используется в текстовом AI-помощнике для подготовки промптов. Полученные инструкции затем переносятся в выбранный генератор {prompt.id === 'image' ? 'изображений' : 'видео'}.</p>}</section>
-          <section className="product-section"><h2>Перед использованием</h2><p>Совместимость с конкретными моделями ещё проверяется. Результат зависит от выбранной модели и ваших исходных данных. Код, расчёты и фактические утверждения в ответе AI нужно проверять.</p></section>
-        </article>
-        <aside className={`product-summary card ${prompt.id}`} aria-label="Информация о товаре">
-          <div className="cover"><span className="cover-label">PROMPT / {String(catalog.indexOf(prompt) + 1).padStart(2, '0')}</span><span className="cover-symbol" aria-hidden="true">{prompt.symbol}</span><span className="cover-bottom">{prompt.category}<span>↗</span></span></div>
-          <div className="product-summary-body"><p className="eyebrow">ГОТОВИТСЯ К ЗАПУСКУ</p><h2>Скоро в продаже</h2><p>Цена ещё не назначена. Покупка станет доступна после подключения оплаты.</p><div className="locked-content"><span aria-hidden="true">⌑</span><div><strong>Полный текст закрыт</strong><p>Будет доступен в личной библиотеке после подтверждённой покупки.</p></div></div><a className="primary" href="/catalog">Вернуться в каталог <span>↗</span></a></div>
-        </aside>
-      </div>
-    </main>
-    <footer><a className="logo" href="/">ПромтМаркет<span className="footer-dot">.</span></a><span>Инструкции, с которых начинается работа.</span><a href="/catalog">В каталог ↗</a></footer>
-  </>;
+  const cover=covers[prompt.id];
+  return <><a className="skip" href="#prompt-content">Перейти к описанию</a><SiteHeader/><main id="prompt-content" className="product-page"><nav className="breadcrumbs" aria-label="Хлебные крошки"><a href="/">Главная</a><span aria-hidden="true">/</span><a href="/catalog">Каталог</a><span aria-hidden="true">/</span><span>{prompt.category}</span></nav>
+    <article className="pv-product store-product"><div className="pv-product-image">{cover?<Image src={cover.src} alt={cover.alt} fill sizes="(max-width:800px) calc(100vw - 48px), 650px" quality={90}/>:<PromptCover id={prompt.id} category={prompt.category} label="ГОТОВАЯ ИНСТРУКЦИЯ"/>}</div><div className="pv-product-body"><p className="pv-kicker">{prompt.category} / Готовая инструкция</p><h1>{prompt.title}</h1><p className="pv-product-lead">{prompt.description}</p><div className="pv-result"><span>Вы получите</span><h2>{prompt.result}</h2><p>Готовую инструкцию с полями для ваших исходных данных. Она помогает задать структуру ответа AI и сформулировать задачу.</p></div><div className="store-product-price"><strong>{prompt.price_minor===null?'Скоро в продаже':new Intl.NumberFormat('ru-RU',{style:'currency',currency:prompt.currency}).format(prompt.price_minor/100)}</strong><span>{prompt.price_minor===null?'Цена ещё не назначена':'За готовую инструкцию'}</span></div>{prompt.price_minor!==null?<OrderButton promptId={prompt.id}/>:<a className="primary" href="/catalog">Выбрать другой промпт ↗</a>}<p className="pv-caption">Полный текст закрыт. После выдачи доступа он будет доступен в личной библиотеке. Реальные платежи пока не подключены.</p></div></article>
+    {promptGuides[prompt.id]&&<PromptGuide guide={promptGuides[prompt.id]}/>}
+    <div className="store-product-details"><section className="product-section"><p className="pv-kicker">01 / ПОДГОТОВКА</p><h2>Что подготовить</h2><ul>{(inputs[prompt.id]??['Описание вашей задачи','Исходные данные и ограничения']).map(input=><li key={input}>{input}</li>)}</ul></section><section className="product-section"><p className="pv-kicker">02 / ИСПОЛЬЗОВАНИЕ</p><h2>Как использовать</h2><ol><li>После выдачи доступа откройте полный текст в своей библиотеке.</li><li>Замените поля в квадратных скобках своими данными.</li><li>Вставьте заполненную инструкцию в текстового AI-помощника.</li><li>Уточните ответ при необходимости и проверьте результат.</li></ol>{isGenerator&&<p className="usage-note">Этот товар используется в текстовом AI-помощнике для подготовки промптов. Полученные инструкции затем переносятся в выбранный генератор {prompt.id==='image'?'изображений':'видео'}.</p>}</section><section className="product-section"><p className="pv-kicker">03 / ПЕРЕД НАЧАЛОМ</p><h2>Перед использованием</h2><p>Совместимость с конкретными моделями ещё проверяется. Результат зависит от выбранной модели и ваших исходных данных. Код, расчёты и фактические утверждения в ответе AI нужно проверять.</p></section></div></main><StoreFooter/></>;
 }

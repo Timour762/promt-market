@@ -1,8 +1,0 @@
-[
-{"id":"python","title":"Senior Python Developer","category":"Программирование","description":"От задачи к архитектуре и понятному Python-коду.","symbol":"PY","result":"Разбор требований, структура проекта, реализация и план тестирования.","price_minor":null,"currency":"RUB"},
-{"id":"business","title":"Бизнес-план за 30 минут","category":"Бизнес","description":"Превратите идею в последовательный план запуска.","symbol":"↗","result":"Аудитория, модели дохода и три финансовых сценария.","price_minor":null,"currency":"RUB"},
-{"id":"marketing","title":"Маркетолог уровня PRO","category":"Маркетинг","description":"Стратегия продвижения с проверяемыми гипотезами.","symbol":"◎","result":"Позиционирование, контент-план и рекламные идеи.","price_minor":null,"currency":"RUB"},
-{"id":"reels","title":"Генератор сценариев Reels","category":"Социальные сети","description":"Десять идей видео с покадровым сценарием.","symbol":"▶","result":"Хуки, озвучка и монтаж. Без обещаний вирусности.","price_minor":null,"currency":"RUB"},
-{"id":"image","title":"AI Image Prompt Architect","category":"Изображения","description":"Из визуальной идеи в точный промпт.","symbol":"◈","result":"Пять вариантов композиции, света и стиля. Для текстового AI-помощника.","price_minor":null,"currency":"RUB"},
-{"id":"video","title":"AI Video Director","category":"Видео","description":"Продумайте историю, движение и каждый кадр.","symbol":"▤","result":"Концепция и три версии промпта. Для текстового AI-помощника.","price_minor":null,"currency":"RUB"}
-]

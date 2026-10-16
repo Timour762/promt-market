@@ -1,26 +1,10 @@
-import type { Metadata } from 'next';
+import SiteHeader from '../../components/SiteHeader';
+import StoreFooter from '../../components/StoreFooter';
 import PromptCatalog from '../../components/PromptCatalog';
-export const metadata: Metadata = {
-  title: 'Каталог промптов | ПромтМаркет',
-  description: 'Выберите промпт для программирования, бизнеса, маркетинга, изображений и видео.',
-};
-export default function CatalogPage() {
-  return <>
-    <a className="skip" href="#catalog">Перейти к каталогу</a>
-    <header>
-      <a className="logo" href="/"><span className="mark">п<span>м</span></span>ПромтМаркет<span className="beta">Первая коллекция</span></a>
-      <nav aria-label="Навигация"><a href="/catalog" aria-current="page">Каталог</a><a href="#how">Как это работает ↗</a></nav>
-    </header>
-    <main className="catalog-page">
-      <div className="catalog-intro">
-        <a className="back-link" href="/">← Главная</a>
-        <h1>Каталог промптов</h1>
-        <p>Найдите готовую инструкцию для своей задачи.</p>
-      </div>
-      <PromptCatalog/>
-<section id="how" className="how"><div><p className="eyebrow">ПОНЯТНЫЙ ПУТЬ</p><h2>Не нужно начинать<br/>с пустой строки.</h2><p>Промпт задаёт структуру работы.<br/>Контекст и решения остаются за вами.</p></div><ol>{[['Выберите задачу','Изучите описание и ожидаемый результат.'],['Добавьте свой контекст','Заполните исходные данные в инструкции.'],['Работайте с AI','Используйте ответ как основу и проверяйте факты.']].map(([title,text],i)=><li key={title}><span>0{i+1}</span><div><h3>{title}</h3><p>{text}</p></div></li>)}</ol></section>
-      <aside className="launch-note">Предварительный каталог. Оплата не подключена, платные тексты не опубликованы.</aside>
-    </main>
-    <footer><a className="logo" href="/">ПромтМаркет<span className="footer-dot">.</span></a><span>Инструкции, с которых начинается работа.</span><a href="#catalog">К коллекции ↑</a></footer>
-  </>;
+import { getCatalog } from '../../lib/catalog';
+import type { Metadata } from 'next';
+export const metadata:Metadata={title:'Каталог промптов | ПромтМаркет',description:'Выберите промпт для программирования, бизнеса, маркетинга, изображений и видео.'};
+export default async function CatalogPage(){
+ const catalog=await getCatalog();
+ return <><a className="skip" href="#catalog">Перейти к каталогу</a><SiteHeader/><main className="pv-main catalog-page"><section className="pv-intro"><div><p className="pv-kicker"><span/>БИБЛИОТЕКА ПРАКТИЧНЫХ ИДЕЙ</p><h1>Меньше попыток.<br/><span>Больше результата.</span></h1></div><div className="pv-intro-side"><p>Готовые промпты для работы<br/>и творчества. Найдите свой подход<br/>к следующей задаче.</p><a href="#catalog">Открыть коллекцию <span>↓</span></a></div></section><PromptCatalog catalog={catalog}/><section className="pv-how" id="how"><div><p className="pv-kicker">ОТ ИДЕИ К ДЕЙСТВИЮ</p><h2>Хороший ответ<br/>начинается с вас.</h2></div><ol>{[['Найдите свой промпт','Выберите задачу и изучите ожидаемый результат.'],['Добавьте контекст','Замените поля в инструкции своими данными.'],['Переходите к работе','Используйте ответ как основу и проверяйте факты.']].map(([title,text],i)=><li key={title}><span>0{i+1}</span><div><h3>{title}</h3><p>{text}</p></div></li>)}</ol></section><aside className="launch-note">Предварительный каталог. Реальные платежи пока не подключены.</aside></main><StoreFooter/></>;
 }
