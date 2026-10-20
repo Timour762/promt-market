@@ -22,7 +22,7 @@ from app.payments.models import Payment
 from app.admin.models import AuditLog
 
 ORIGIN="http://localhost:3107"
-class SecurityTests(unittest.IsolatedAsyncioTestCase):
+class SecurityFixture(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.schema="pm_test_"+secrets.token_hex(8)
         self.control=create_async_engine(get_settings().database_url,poolclass=NullPool)
@@ -65,6 +65,7 @@ class SecurityTests(unittest.IsolatedAsyncioTestCase):
         response=await self.post(client,'/api/v1/auth/login',{"email":"fixtureadmin","password":self.password})
         self.assertEqual(response.status_code,200,response.text)
         return client
+class SecurityTests(SecurityFixture):
     async def test_public_content_and_csrf(self):
         response=await self.client.get('/api/v1/prompts')
         self.assertEqual(response.status_code,200)
@@ -141,6 +142,112 @@ class SecurityTests(unittest.IsolatedAsyncioTestCase):
             unknown={**payload,'mdOrder':str(uuid4())}
             self.assertEqual((await self.client.post('/api/v1/payments/sber/webhook',json=unknown)).status_code,200)
             bank.assert_not_awaited()
+
+    async def manual_recipient(self):
+        from cryptography.fernet import Fernet
+        from pydantic import SecretStr
+        from types import SimpleNamespace
+        from app.payments.recipient import PaymentRecipient
+        key = Fernet.generate_key()
+        async with self.factory() as db:
+            db.add(PaymentRecipient(id=1, recipient_name='Fixture Recipient', bank_name='Fixture Bank',
+                encrypted_card=Fernet(key).encrypt(b'4242424242424242').decode(), card_last4='4242', revision=1))
+            await db.commit()
+        return SimpleNamespace(payment_details_encryption_key=SecretStr(key.decode()))
+
+    async def test_manual_payment_snapshot_queue_and_concurrent_confirmation(self):
+        from cryptography.fernet import Fernet
+        from app.payments.recipient import PaymentRecipient
+        from app.payments.manual_models import ManualPayment
+        settings = await self.manual_recipient()
+        await self.register(self.client)
+        order = (await self.post(self.client, '/api/v1/me/orders', {'prompt_id': 'fixture-prompt'})).json()
+        path = '/api/v1/me/orders/' + order['id'] + '/manual-payment'
+        admin = await self.admin()
+        try:
+            self.assertEqual((await admin.get('/api/v1/admin/orders/pending-payments')).json()['total'], 0)
+            with patch('app.payments.manual.get_settings', return_value=settings):
+                results = await asyncio.gather(*[self.post(self.client, path, {}) for _ in range(3)])
+                self.assertTrue(all(r.status_code == 200 for r in results), [r.text for r in results])
+                self.assertEqual(results[0].json()['status'], 'awaiting_confirmation')
+                self.assertNotIn('4242424242424242', results[0].text)
+                details = await self.client.get(path)
+                self.assertEqual(details.headers['cache-control'], 'no-store')
+                self.assertEqual(details.json()['recipient']['card_number'], '4242424242424242')
+                async with self.factory() as db:
+                    recipient = await db.get(PaymentRecipient, 1)
+                    recipient.recipient_name = 'New Recipient'
+                    recipient.encrypted_card = Fernet(settings.payment_details_encryption_key.get_secret_value().encode()).encrypt(b'5555555555554444').decode()
+                    recipient.card_last4 = '4444'; recipient.revision = 2
+                    prompt = await db.get(Prompt, 'fixture-prompt'); prompt.price_minor = 99900
+                    await db.commit()
+                self.assertEqual((await self.client.get(path)).json()['recipient']['recipient_name'], 'Fixture Recipient')
+                self.assertEqual((await self.client.get(path)).json()['recipient']['card_number'], '4242424242424242')
+            queue = await admin.get('/api/v1/admin/orders/pending-payments')
+            self.assertEqual(queue.json()['total'], 1)
+            self.assertEqual(queue.json()['items'][0]['price_minor'], 29900)
+            self.assertEqual(queue.json()['items'][0]['customer_contact'], 'fixture@example.com')
+            self.assertEqual(queue.json()['items'][0]['masked_card'], '•••• •••• •••• 4242')
+            self.assertNotIn('4242424242424242', queue.text)
+            self.assertEqual((await self.client.get('/api/v1/me/library/' + order['id'])).status_code, 404)
+            confirm = '/api/v1/admin/orders/' + order['id'] + '/confirm-payment'
+            responses = await asyncio.gather(*[self.post(admin, confirm, {}) for _ in range(3)])
+            self.assertTrue(all(r.status_code == 200 for r in responses), [r.text for r in responses])
+            self.assertEqual((await self.client.get(path + '/status')).json()['status'], 'paid')
+            self.assertEqual((await admin.get('/api/v1/admin/orders/pending-payments')).json()['total'], 0)
+            self.assertEqual((await self.client.get('/api/v1/me/library/' + order['id'])).json()['content'], 'PRIVATE_TEST_CONTENT')
+            self.assertEqual((await self.client.get('/api/v1/me/library/' + order['id'] + '/download')).text, 'PRIVATE_TEST_CONTENT')
+            self.assertEqual(len((await self.client.get('/api/v1/me/library')).json()), 1)
+            async with self.factory() as db:
+                self.assertEqual(await db.scalar(select(func.count()).select_from(ManualPayment)), 1)
+                for action in ['order.manual_payment_requested', 'order.manual_payment_confirmed']:
+                    self.assertEqual(await db.scalar(select(func.count()).select_from(AuditLog).where(AuditLog.action == action)), 1)
+                saved = await db.get(ManualPayment, __import__('uuid').UUID(order['id']))
+                self.assertIsNotNone(saved.confirmed_at)
+                self.assertIsNotNone(saved.confirmed_by)
+                self.assertNotIn('4242424242424242', saved.encrypted_card)
+        finally:
+            await admin.aclose()
+
+    async def test_manual_payment_ownership_admin_csrf_and_tampering(self):
+        settings = await self.manual_recipient()
+        await self.register(self.client)
+        order = (await self.post(self.client, '/api/v1/me/orders', {'prompt_id': 'fixture-prompt'})).json()
+        path = '/api/v1/me/orders/' + order['id'] + '/manual-payment'
+        confirm = '/api/v1/admin/orders/' + order['id'] + '/confirm-payment'
+        admin = await self.admin()
+        try:
+            self.assertEqual((await self.client.post(path, json={})).status_code, 403)
+            self.assertEqual((await self.post(self.client, path, {'price_minor': 1, 'status': 'paid'})).status_code, 422)
+            self.assertEqual((await self.client.get('/api/v1/admin/orders/pending-payments')).status_code, 403)
+            self.assertEqual((await self.post(self.client, confirm, {})).status_code, 403)
+            self.assertEqual((await self.post(admin, confirm, {})).status_code, 409)
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=ORIGIN) as other:
+                await self.register(other, 'other@example.com')
+                self.assertEqual((await other.get(path)).status_code, 404)
+                self.assertEqual((await other.get(path + '/status')).status_code, 404)
+                self.assertEqual((await self.post(other, path, {})).status_code, 404)
+            with patch('app.payments.manual.get_settings', return_value=settings):
+                self.assertEqual((await self.post(self.client, path, {})).status_code, 200)
+            self.assertEqual((await admin.post(confirm, json={})).status_code, 403)
+            self.assertEqual((await self.post(admin, confirm, {'price_minor': 1})).status_code, 422)
+            self.assertEqual((await self.client.get(path + '/status')).json()['status'], 'awaiting_confirmation')
+            self.assertEqual((await self.client.get('/api/v1/me/library/' + order['id'])).status_code, 404)
+        finally:
+            await admin.aclose()
+
+    async def test_manual_payment_missing_recipient_and_sandbox_conflict(self):
+        await self.register(self.client)
+        order = (await self.post(self.client, '/api/v1/me/orders', {'prompt_id': 'fixture-prompt'})).json()
+        path = '/api/v1/me/orders/' + order['id'] + '/manual-payment'
+        self.assertEqual((await self.post(self.client, path, {})).status_code, 503)
+        self.assertEqual((await self.client.get(path + '/status')).json()['status'], 'pending')
+        await self.manual_recipient()
+        async with self.factory() as db:
+            db.add(Payment(order_id=__import__('uuid').UUID(order['id']), status='pending'))
+            await db.commit()
+        self.assertEqual((await self.post(self.client, path, {})).status_code, 409)
+        self.assertEqual((await self.client.get(path + '/status')).json()['status'], 'pending')
 
 class MailTests(unittest.TestCase):
     def test_smtp_uses_tls_and_never_plaintext_fallback(self):

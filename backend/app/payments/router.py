@@ -5,6 +5,7 @@ from app.auth.dependencies import Database,CurrentUser
 from app.auth.security import require_csrf
 from app.orders.models import Order
 from app.payments.models import Payment
+from app.payments.platega_models import PlategaPayment
 from app.payments.sber import call,enabled,safe_form_url
 from app.core.config import get_settings
 from app.admin.models import AuditLog
@@ -22,6 +23,8 @@ async def start(order_id:UUID,db:Database,user:CurrentUser):
     if not enabled():raise HTTPException(503,"Тестовый эквайринг Сбера ещё не подключён")
     order=await locked(order_id,db,user)
     if order.status!="pending":raise HTTPException(409,"Доступ по этому заказу уже открыт")
+    if await db.scalar(select(PlategaPayment.id).where(PlategaPayment.order_id==order.id)):
+        raise HTTPException(409,"По заказу уже начата оплата через Platega")
     if order.currency!="RUB" or order.price_minor<=0:raise HTTPException(409,"Для тестовой оплаты нужна положительная сумма в рублях")
     payment=await db.scalar(select(Payment).where(Payment.order_id==order.id))
     if payment:

@@ -21,7 +21,7 @@ export function OrderButton({ promptId }: { promptId: string }) {
     } catch(error) { setError(error instanceof Error?error.message:'Не удалось создать заказ'); }
     finally { setBusy(false); }
   }
-  return <div className="order-action"><button type="button" className="primary" disabled={busy} onClick={submit}>{busy?'Создаём заказ…':'Оформить заказ'}</button><p className="field-hint">Оплата пока не подключена. Заказ сохранится без списания денег.</p>{error&&<p className="form-error" role="alert">{error}</p>}</div>;
+  return <div className="order-action"><button type="button" className="primary" disabled={busy} onClick={submit}>{busy?'Создаём заказ…':'Оформить заказ'}</button><p className="field-hint">После оформления можно оплатить в рублях через Platega. Доступ откроется автоматически после подтверждения оплаты.</p>{error&&<p className="form-error" role="alert">{error}</p>}</div>;
 }
 export function GrantTestAccess({ orderId }: { orderId: string }) {
   const router=useRouter();const [busy,setBusy]=useState(false);const [error,setError]=useState('');

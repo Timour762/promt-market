@@ -4,7 +4,7 @@ const allowedOrigins = (process.env.AUTH_ALLOWED_ORIGINS ?? 'http://localhost:31
 async function proxy(request: NextRequest, context: Context) {
   const { path } = await context.params;
   const validPrompt = path[0] === 'prompts' && ((request.method === 'POST' && path.length === 1) || (path.length === 2 && request.method === 'PATCH' && /^[a-z][a-z0-9-]{1,79}$/.test(path[1])) || (path.length === 3 && request.method === 'POST' && /^[a-z][a-z0-9-]{1,79}$/.test(path[1]) && ['publish','archive','draft'].includes(path[2])));
-  const valid = validPrompt || (request.method === 'POST' && path.length === 3 && path[0] === 'orders' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(path[1]) && path[2] === 'test-access');
+  const valid = (request.method === 'PATCH' && path.length === 1 && path[0] === 'payment-details') || validPrompt || (request.method === 'POST' && path.length === 3 && path[0] === 'orders' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(path[1]) && ['test-access','confirm-payment'].includes(path[2]));
   if (!valid) return NextResponse.json({ detail: 'Неизвестное действие' }, { status: 404 });
   const origin = request.headers.get('origin') ?? '';
   if (!allowedOrigins.includes(origin)) return NextResponse.json({ detail: 'Недопустимый источник запроса' }, { status: 403 });
@@ -29,3 +29,15 @@ async function proxy(request: NextRequest, context: Context) {
 }
 export const POST = proxy;
 export const PATCH = proxy;
+export async function GET(request:NextRequest,context:Context){
+  const {path}=await context.params;
+  const headers={'Cache-Control':'no-store'};
+  if(path.length!==2||path[0]!=='orders'||path[1]!=='pending-payments')return NextResponse.json({detail:'Не найдено'},{status:404,headers});
+  const session=request.cookies.get('pm_session')?.value;
+  if(!session)return NextResponse.json({detail:'Войдите в аккаунт'},{status:401,headers});
+  const offset=Math.min(5000000,Math.max(0,Number.parseInt(request.nextUrl.searchParams.get('offset')??'0',10)||0));
+  try{
+    const upstream=await fetch(`${process.env.BACKEND_URL??'http://127.0.0.1:8107'}/api/v1/admin/orders/pending-payments?offset=${offset}`,{headers:{Cookie:`pm_session=${encodeURIComponent(session)}`},cache:'no-store',redirect:'error',signal:AbortSignal.timeout(10000)});
+    return new NextResponse(await upstream.text(),{status:upstream.status,headers:{...headers,'Content-Type':'application/json'}});
+  }catch{return NextResponse.json({detail:'Список временно недоступен'},{status:503,headers});}
+}

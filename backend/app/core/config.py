@@ -1,5 +1,6 @@
 from functools import lru_cache
 from pathlib import Path
+from uuid import UUID
 from typing import Literal
 from cryptography.fernet import Fernet
 from pydantic import field_validator, model_validator, EmailStr
@@ -7,6 +8,9 @@ from pydantic import SecretStr, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
+    platega_enabled: bool = False
+    platega_merchant_id: UUID | None = None
+    platega_secret: SecretStr | None = None
     sber_sandbox_enabled: bool = False
     sber_webhook_enabled: bool = False
     sber_username: str | None = None
@@ -16,6 +20,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://promt:local_only@localhost:5438/promt_market"
     csrf_secret: SecretStr = Field(min_length=32)
     mail_encryption_key: SecretStr
+    payment_details_encryption_key: SecretStr | None = None
     public_web_url: str = "http://localhost:3107"
     app_env: Literal["local", "production", "test"] = "local"
     auth_proxy_secret: SecretStr | None = Field(default=None,min_length=32)
@@ -48,6 +53,17 @@ class Settings(BaseSettings):
     cookie_secure: bool = False
     session_days: int = Field(default=7, ge=1, le=30)
     allowed_origins: list[str] = ["http://localhost:3107", "http://127.0.0.1:3107"]
+    @field_validator("payment_details_encryption_key")
+    @classmethod
+    def validate_payment_key(cls, value):
+        if value is not None: Fernet(value.get_secret_value().encode())
+        return value
+
+    @field_validator("platega_merchant_id", mode="before")
+    @classmethod
+    def empty_merchant_id(cls, value):
+        return None if value == "" else value
+
     @field_validator("mail_encryption_key")
     @classmethod
     def validate_mail_key(cls, value: SecretStr):

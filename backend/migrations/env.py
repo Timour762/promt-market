@@ -1,3 +1,6 @@
+from app.payments.recipient import PaymentRecipient
+from app.payments.manual_models import ManualPayment
+from app.payments.platega_models import PlategaPayment
 from app.payments.models import Payment
 from app.orders.models import Order
 import asyncio

@@ -1,0 +1,21 @@
+# Иллюстрация личного кабинета
+
+На `/account` добавлен фиолетовый баннер с белым роботом и планшетом по визуальному референсу владельца. На компьютере заголовок слева, робот справа; на телефоне иллюстрация ниже текста. Профиль, библиотека, история заказов и административные настройки расположены под баннером. Проверка доступа к кабинету сохранена.
+
+По уточнению владельца баннер занимает всю высоту окна под шапкой (`100svh` минус высота шапки), включая мобильные экраны. Ссылка «Перейти к профилю» ведёт к разделам кабинета под баннером. Ограничение ширины фонового изображения на больших экранах снято.
+
+## Профиль под баннером
+
+По следующему запросу владельца белая область под баннером заменена на тёмно-фиолетовое пространство со свечением, звёздными точками и полупрозрачными панелями. Вкладки, профиль, библиотека, Platega и ожидающие оплаты оформлены в той же палитре. Стили ограничены `.account-workspace` и не меняют остальные страницы магазина.
+
+В блоке библиотеки добавлена сфера с объёмным освещением, вращающимися орбитами и плавным парением. Компонент `AccountOrbit.tsx` использует CSS 3D transforms без сторонних библиотек. IntersectionObserver и событие visibilitychange останавливают движение вне экрана и на скрытой вкладке; prefers-reduced-motion отключает анимацию. Графика декоративная и не перехватывает нажатия.
+
+Проверены TypeScript, production build и шесть браузерных сценариев (customer/admin, 1440/390/320 px). Проверены тёмная палитра, загрузка изображения, отсутствие переполнения и ошибок JavaScript, движение сферы, reduced-motion, остановка вне экрана, ссылка к профилю и переход в библиотеку. Временные пользователи и сессии удалены. Скриншоты сохранены локально в `.local/account-workspace-*.png`.
+
+Изображение создано встроенным imagegen и сохранено в `frontend/public/images/hero/account-robot-v1.png`. Компонент: `frontend/src/components/AccountHero.tsx`. Стили: `frontend/src/app/account-hero.css`. Иллюстрация декоративная; заголовок и приветствие доступны в HTML. Next Image оптимизирует изображение.
+
+Проверены TypeScript и production build. В браузере проверены покупатель и администратор на ширинах 1440, 390 и 320 px: картинка загружается, заголовок один, горизонтальной прокрутки и ошибок JavaScript нет, профиль и переход в библиотеку доступны, административные настройки видит только администратор. Временные локальные пользователи и сессии проверки удалены. На узком экране у администратора остаётся компактный знак магазина, чтобы все кнопки шапки помещались.
+
+## Промпт
+
+Use case: stylized-concept. Asset type: original cinematic wide background illustration for the personal account hero of a Russian AI prompt marketplace. Create a premium 16:9 landscape 3D artwork. A graceful white and graphite humanoid android in three-quarter profile is positioned entirely in the RIGHT 43 PERCENT of the canvas, looking down at and carefully using a slim translucent tablet held in its hands. Porcelain white smooth shell panels, subtle segmented mechanical joints, dark graphite neck and fingers, circular violet luminous ear module and shoulder details, small violet glowing eyes, elegant sophisticated humanlike face, realistic materials and tasteful fine engineering. Waist-up view, both hands and tablet visible, robot head and tablet safely inside the image with ample margin. The robot should occupy most of the height of the right side, polished realistic 3D rendering, premium editorial lighting. Dark near-black plum and deep indigo background #10091f, soft violet ambient glow, subtle low-contrast blurred futuristic data diagrams and circuit traces behind it; quiet, mysterious, refined atmosphere. LEFT 55 PERCENT is very dark simple empty negative space for a large website title and description which will be rendered separately in HTML. Main subject never overlaps that left text zone. Soft rich violet highlights and rim light on the robot, dark corners and bottom edge so the artwork can blend into a dark purple web banner. No letters, no numbers, NO TEXT, no logo, no brand, no watermark, no browser chrome, no UI screenshot, no website navigation. Original standalone illustration inspired by futuristic violet robot imagery, not a copy of any website.

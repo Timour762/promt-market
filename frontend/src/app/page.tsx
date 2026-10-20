@@ -1,5 +1,6 @@
 import SiteHeader from '../components/SiteHeader';
+import NeuralHero from '../components/NeuralHero';
 
 export default function Home(){
-return <><a className="skip" href="/catalog">Перейти к каталогу</a><SiteHeader/><main><section className="hero"><div><p className="eyebrow"><span/> МЕНЬШЕ ПОИСКОВ. БОЛЬШЕ ЯСНОСТИ.</p><h1>Хороший результат<br/>начинается с <em>точного<br className="desktop"/> промпта.</em></h1><p className="intro">Готовые инструкции для AI под реальные задачи.<br/>Выберите направление, заполните свои данные<br className="desktop"/> и переходите к работе.</p><a className="primary" href="/catalog">Найти свой промпт <span>↓</span></a></div><div className="hero-art"><div className="art-top"><span>ОТ ИДЕИ К РЕЗУЛЬТАТУ</span><span>01 / 03</span></div><div className="prompt-paper"><span className="paper-label">ВАША ЗАДАЧА</span><h2>Есть идея.<br/>Нужен план.</h2><div className="paper-rule"/><p><span>Роль</span> Бизнес-стратег</p><p><span>Контекст</span> Продукт и аудитория</p><p><span>Результат</span> План на 90 дней</p><div className="paper-bottom">Структура вместо пустого листа <span>↗</span></div></div><span className="art-caption">Задайте контекст. Получите направление.</span></div></section></main></>;
+return <div className="neural-storefront neural-home"><a className="skip" href="/catalog/collection">Перейти к каталогу</a><SiteHeader/><main className="neural-main"><NeuralHero/></main></div>;
 }

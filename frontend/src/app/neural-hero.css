@@ -1,0 +1,311 @@
+.neural-storefront {
+  --neural-bg: #0d0819;
+  --neural-white: #faf7ff;
+  background: var(--pv-bg);
+}
+
+.storefront .neural-storefront > .pv-header {
+  position: relative;
+  z-index: 2;
+  height: 94px;
+  max-width: none;
+  padding-inline: max(36px, calc((100% - 1208px) / 2));
+  background: var(--neural-bg);
+  color: var(--neural-white);
+  border-bottom: 1px solid #ffffff0f;
+}
+
+.storefront .neural-storefront .pv-logo,
+.storefront .neural-storefront .pv-account {
+  color: var(--neural-white);
+}
+
+.neural-storefront .pv-mark {
+  background: #211535;
+  color: #faf7ff;
+  box-shadow: inset 0 0 0 1px #b397ff38;
+}
+
+.neural-storefront .pv-mark > span {
+  background: #bf9bff;
+  box-shadow: 0 0 9px #bf9bff80;
+}
+
+.storefront .neural-storefront .pv-header .admin-header-link,
+.neural-storefront .pv-header nav a:hover {
+  color: #c7a7ff;
+}
+
+.neural-storefront .pv-account {
+  border-color: #c9b5f32e;
+  background: #ffffff05;
+}
+
+.neural-storefront .pv-account:hover {
+  background: #ffffff0f;
+}
+
+.storefront main.neural-main {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.neural-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--neural-bg);
+  color: var(--neural-white);
+}
+
+.neural-hero-art {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+
+.neural-hero-art img {
+  object-fit: cover;
+  object-position: center right;
+}
+
+.neural-hero::before,
+.neural-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.neural-hero::before {
+  background: linear-gradient(90deg, #0d0819eb 0%, #0d0819b3 30%, #0d08191a 65%, transparent 100%),
+    linear-gradient(180deg, #0d08199c 0%, transparent 18%, transparent 80%, #0d0819 100%);
+}
+
+.neural-hero::after {
+  background: radial-gradient(ellipse at 30% 100%, #7e32ef30, transparent 55%);
+}
+
+.neural-hero-inner {
+  max-width: 1280px;
+  min-height: 660px;
+  margin: 0 auto;
+  padding: 76px 36px 78px;
+  display: flex;
+  align-items: center;
+}
+
+.neural-hero-copy {
+  width: 60%;
+  max-width: 690px;
+}
+
+.neural-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #d1c3e8;
+  font-size: 10px;
+  font-weight: 550;
+  letter-spacing: 1.8px;
+  line-height: 1.6;
+  margin: 0 0 27px;
+}
+
+.neural-eyebrow > span {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  background: #bd92ff;
+  border-radius: 50%;
+  box-shadow: 0 0 14px #bb88ffb3;
+}
+
+.storefront .neural-hero h1 {
+  font-size: clamp(40px, 4.9vw, 68px);
+  font-weight: 650;
+  line-height: 1.08;
+  letter-spacing: -2.9px;
+  margin: 0;
+  color: var(--neural-white);
+}
+
+.neural-hero h1 > span {
+  color: #bd8fff;
+  background: linear-gradient(100deg, #d0a5ff, #a675ff 90%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.neural-hero-description {
+  max-width: 440px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #c5bcd6;
+  margin: 26px 0 30px;
+  text-wrap: pretty;
+}
+
+.neural-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.neural-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 26px;
+  min-height: 52px;
+  padding: 15px 22px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #fff;
+  transition: background-color 160ms ease, box-shadow 160ms ease;
+}
+
+.neural-button span {
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 400;
+}
+
+.neural-button-primary {
+  background: linear-gradient(110deg, #7638e8, #873cf0);
+  box-shadow: 0 7px 32px #702ce93d, inset 0 1px 0 #ffffff26;
+}
+
+.neural-button-primary:hover {
+  box-shadow: 0 7px 38px #873cf078, inset 0 1px 0 #ffffff38;
+}
+
+.neural-button-secondary {
+  border-color: #b29bcf42;
+  background: #180f2b80;
+}
+
+.neural-button-secondary:hover {
+  background: #38234b80;
+}
+
+.neural-storefront a:focus-visible {
+  outline: 2px solid #ae87fa;
+  outline-offset: 5px;
+}
+
+.neural-hero-caption {
+  color: #a99bbf;
+  margin: 24px 0 0;
+  font-size: 11px;
+  letter-spacing: .2px;
+}
+
+.neural-home {
+  min-height: 100vh;
+  background: var(--neural-bg);
+}
+
+.storefront .collection-page {
+  padding-top: 36px;
+}
+
+.collection-page .pv-collection-heading h1 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -.6px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  line-height: 1.3;
+}
+
+.collection-page .pv-collection-heading h1 > span {
+  font-size: 11px;
+  letter-spacing: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: oklch(93% .013 265);
+  border-radius: 50%;
+  color: var(--pv-muted);
+}
+
+@media (min-width: 1600px) {
+  .neural-hero-art {
+    max-width: 1600px;
+    margin: 0 auto;
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+}
+
+@media (max-width: 1050px) and (min-width: 801px) {
+  .neural-hero-copy { width: 65%; }
+  .neural-hero-inner { min-height: 610px; }
+  .neural-hero-art { left: -130px; right: -130px; }
+}
+
+@media (max-width: 800px) {
+  .storefront .neural-storefront > .pv-header {
+    height: 82px;
+    padding-inline: 24px;
+  }
+
+  .neural-hero-inner {
+    min-height: 850px;
+    padding: 48px 24px 385px;
+    align-items: flex-start;
+  }
+
+  .neural-hero-copy { width: 100%; max-width: 570px; }
+  .storefront .neural-hero h1 { font-size: 53px; letter-spacing: -2.3px; }
+  .neural-hero-description { max-width: 430px; }
+
+  .neural-hero-art {
+    inset: auto -40px 0 auto;
+    width: 860px;
+    height: 480px;
+  }
+
+  .neural-hero::before {
+    background: linear-gradient(180deg, #0d0819 0%, #0d0819 43%, #0d081900 68%, #0d0819 100%);
+  }
+
+  .neural-hero::after { background: radial-gradient(ellipse at 50% 65%, #7e32ef15, transparent 65%); }
+}
+
+@media (max-width: 550px) {
+  .storefront .neural-storefront > .pv-header { height: 76px; padding-inline: 20px; }
+  .neural-storefront .pv-account { background: transparent; }
+  .neural-hero-inner { padding: 39px 20px 370px; min-height: 810px; }
+  .neural-eyebrow { font-size: 8px; letter-spacing: 1.4px; margin-bottom: 23px; }
+  .storefront .neural-hero h1 { font-size: clamp(30px, 9.4vw, 48px); letter-spacing: -1.65px; }
+  .neural-hero-description { font-size: 14px; line-height: 1.8; margin: 23px 0 25px; }
+  .neural-hero-actions { gap: 10px; }
+  .neural-button { font-size: 11px; min-height: 48px; padding: 13px 16px; gap: 15px; }
+  .neural-hero-caption { font-size: 10px; margin-top: 21px; }
+  .neural-hero-art { width: 760px; height: 428px; right: -35px; }
+  .collection-page .pv-collection-heading h1 { font-size: 20px; }
+  .neural-hero::before {
+    background: linear-gradient(180deg, #0d0819 0%, #0d0819 46%, #0d081900 69%, #0d0819 100%);
+  }
+}
+
+@media (max-width: 360px) {
+  .neural-hero-actions { flex-direction: column; align-items: flex-start; }
+  .neural-button { width: 100%; justify-content: space-between; }
+  .neural-hero-inner { min-height: 870px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neural-button { transition: none; }
+}

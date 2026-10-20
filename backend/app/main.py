@@ -13,6 +13,9 @@ from app.admin.router import router as admin_router
 from app.orders.router import router as orders_router
 from app.payments.router import router as payments_router
 from app.payments.webhook import router as webhook_router
+from app.payments.recipient import router as recipient_router
+from app.payments.manual import router as manual_payment_router
+from app.payments.platega_router import router as platega_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -27,6 +30,9 @@ app.include_router(admin_router, prefix="/api/v1")
 app.include_router(orders_router, prefix="/api/v1")
 app.include_router(payments_router, prefix="/api/v1")
 app.include_router(webhook_router, prefix="/api/v1")
+app.include_router(recipient_router, prefix="/api/v1")
+app.include_router(manual_payment_router, prefix="/api/v1")
+app.include_router(platega_router, prefix="/api/v1")
 
 @app.exception_handler(SQLAlchemyError)
 async def database_error(request, exc):

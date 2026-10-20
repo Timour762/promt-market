@@ -125,22 +125,22 @@ async def audit(db: Database, offset: int = Query(default=0,ge=0), limit: int = 
 @router.get("/payments/setup")
 async def payment_setup():
     from app.core.config import get_settings
-    from app.payments.sber import enabled
-    from app.orders.router import test_access_enabled
+    from app.payments.platega import configured, enabled, public_url_ready
     settings = get_settings()
     return {
-        "provider": "sber",
-        "mode": "sandbox",
-        "live_enabled": False,
-        "sandbox_enabled": settings.sber_sandbox_enabled,
-        "username_configured": bool(settings.sber_username and settings.sber_username.strip()),
-        "password_configured": bool(settings.sber_password and settings.sber_password.get_secret_value().strip()),
-        "sandbox_configured": enabled(),
+        "provider": "platega",
+        "live_enabled": enabled(),
+        "enabled_in_settings": settings.platega_enabled,
+        "merchant_id_configured": bool(settings.platega_merchant_id),
+        "secret_configured": bool(settings.platega_secret and settings.platega_secret.get_secret_value().strip()),
+        "credentials_configured": configured(),
+        "public_url_configured": public_url_ready(),
         "connection_verified": False,
-        "test_access_enabled": test_access_enabled(),
-        "automatic_confirmation_enabled": settings.sber_webhook_enabled and enabled(),
+        "automatic_confirmation_enabled": enabled(),
         "webhook_handler_available": True,
-        "webhook_enabled": settings.sber_webhook_enabled,
-        "webhook_path": "/api/payments/sber/webhook",
-        "crypto_configured": False,
+        "webhook_path": "/api/payments/platega/webhook",
+        "webhook_url": settings.public_web_url + "/api/payments/platega/webhook" if public_url_ready() else None,
+        "checkout_currency": "RUB",
+        "settlement_currency": "USDT",
+        "payout_configuration": "platega_account",
     }

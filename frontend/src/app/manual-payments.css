@@ -1,0 +1,50 @@
+.manual-payment-panel h2 { margin-top: 28px; font-size: 26px; font-weight: 550; letter-spacing: -.6px; }
+.transfer-recipient { padding: 24px; margin: 24px 0; background: oklch(95% .014 265); border-radius: 10px; }
+.transfer-recipient dl { margin-bottom: 24px; }
+.transfer-recipient dd { font-size: 18px; overflow-wrap: anywhere; }
+.transfer-card > span { color: var(--muted); font-size: 13px; }
+.transfer-card > div { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 12px; }
+.transfer-card strong { font-size: 23px; font-weight: 550; letter-spacing: .6px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.transfer-card .secondary-button { margin: 0; white-space: nowrap; cursor: pointer; }
+.payment-waiting { display: flex; align-items: flex-start; gap: 18px; padding: 22px; margin: 26px 0 16px; border: 1px solid var(--line); border-radius: 10px; }
+.payment-waiting h3 { font-size: 17px; font-weight: 550; line-height: 1.5; margin: 0 0 7px; }
+.payment-waiting p { font-size: 13px; margin: 0; }
+.payment-spinner { display: block; width: 24px; height: 24px; flex: 0 0 24px; margin-top: 3px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: payment-spin 1s linear infinite; }
+@keyframes payment-spin { to { transform: rotate(360deg); } }
+.payment-success { padding: 10px 0; }
+.payment-success-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: oklch(94% .035 155); color: oklch(36% .075 155); font-size: 24px; }
+.manual-payment-panel .form-error, .payment-actions .form-error { margin-top: 20px; }
+.payment-actions .primary:disabled { cursor: not-allowed; }
+.payment-actions[aria-busy="true"] .primary:disabled { cursor: wait; }
+.pending-payments { border-top: 1px solid var(--line); padding-top: 30px; margin-top: 45px; scroll-margin-top: 24px; }
+.pending-payments-heading { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.pending-payments-heading h2 { font-size: 27px; font-weight: 550; letter-spacing: -.7px; margin: 12px 0; }
+.pending-payments-intro { max-width: 85ch; font-size: 13px; color: var(--muted); line-height: 1.85; margin-bottom: 25px; }
+.pending-payment-row { display: grid; grid-template-columns: minmax(160px, 1fr) minmax(180px, 1.2fr) auto auto; gap: 24px; align-items: center; padding: 24px 0; border-top: 1px solid var(--line); }
+.pending-payment-customer { display: flex; flex-direction: column; gap: 7px; overflow-wrap: anywhere; }
+.pending-payment-customer strong { font-size: 15px; font-weight: 550; }
+.pending-payment-customer span, .pending-payment-customer small { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.pending-payment-product h3 { font-size: 16px; font-weight: 550; line-height: 1.5; margin: 0 0 8px; overflow-wrap: anywhere; }
+.pending-payment-product p { color: var(--muted); font-size: 12px; line-height: 1.8; margin: 0; }
+.pending-payment-amount { font-size: 18px; white-space: nowrap; font-weight: 550; }
+.pending-payment-row .primary { cursor: pointer; border: 0; }
+.pending-payment-row .primary:disabled { cursor: wait; }
+.pending-payments-empty { padding: 24px; background: oklch(95% .012 265); border-radius: 10px; }
+.pending-payments-empty h3 { font-size: 18px; font-weight: 550; margin: 0 0 10px; }
+.pending-payments-empty p { font-size: 13px; color: var(--muted); line-height: 1.8; margin: 0; }
+.pending-payments .save-message, .pending-payments .form-error { margin-bottom: 20px; }
+@media (max-width: 900px) {
+  .pending-payment-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+  .pending-payment-row .primary { justify-self: end; }
+}
+@media (max-width: 550px) {
+  .transfer-recipient { padding: 18px; }
+  .transfer-card > div { align-items: flex-start; flex-direction: column; gap: 14px; }
+  .transfer-card strong { font-size: clamp(14px, 4.6vw, 18px); letter-spacing: 0; }
+  .payment-waiting { padding: 18px; gap: 13px; }
+  .pending-payments-heading { align-items: flex-start; flex-direction: column; gap: 5px; }
+  .pending-payment-row { grid-template-columns: minmax(0, 1fr); }
+  .pending-payment-row .primary { justify-self: stretch; }
+  .pending-payments-heading h2 { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { .payment-spinner { animation: none; } }

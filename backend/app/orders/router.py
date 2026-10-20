@@ -47,10 +47,10 @@ async def order_detail(order_id:UUID,db:Database,user:CurrentUser):
     return summary(order)
 @router.get("/me/library")
 async def library(db:Database,user:CurrentUser,offset:int=Query(default=0,ge=0)):
-    items=(await db.scalars(select(Order).where(Order.user_id==user.id,Order.status.in_(["test_granted","sandbox_paid"])).order_by(Order.created_at.desc(),Order.id).offset(offset).limit(50))).all()
+    items=(await db.scalars(select(Order).where(Order.user_id==user.id,Order.status.in_(["paid","test_granted","sandbox_paid"])).order_by(Order.created_at.desc(),Order.id).offset(offset).limit(50))).all()
     return [summary(item) for item in items]
 async def own_content(order_id,db,user):
-    order=await db.scalar(select(Order).where(Order.id==order_id,Order.user_id==user.id,Order.status.in_(["test_granted","sandbox_paid"])))
+    order=await db.scalar(select(Order).where(Order.id==order_id,Order.user_id==user.id,Order.status.in_(["paid","test_granted","sandbox_paid"])))
     if order is None: raise HTTPException(404,"Промпт не найден в вашей библиотеке")
     version=await db.get(PromptVersion,order.version_id)
     return order,version
@@ -74,7 +74,8 @@ async def grant(order_id:UUID,db:Database,actor:Admin):
     if order is None: raise HTTPException(404,"Заказ не найден")
     if order.status=="pending":
         from app.payments.models import Payment
-        if await db.scalar(select(Payment.id).where(Payment.order_id==order.id)):
+        from app.payments.platega_models import PlategaPayment
+        if await db.scalar(select(Payment.id).where(Payment.order_id==order.id)) or await db.scalar(select(PlategaPayment.id).where(PlategaPayment.order_id==order.id)):
             raise HTTPException(409,"По заказу уже начата оплата. Сначала проверьте её статус.")
     if order.status=="pending":
         order.status="test_granted"

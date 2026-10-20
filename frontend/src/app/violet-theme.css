@@ -1,0 +1,245 @@
+body.storefront.violet-theme {
+  --pv-bg: #0d0819;
+  --pv-ink: #f5efff;
+  --pv-muted: #b9accd;
+  --pv-line: #b998e32e;
+  --pv-blue: #cba7ff;
+  --bg: var(--pv-bg);
+  --ink: var(--pv-ink);
+  --muted: var(--pv-muted);
+  --line: var(--pv-line);
+  --accent: var(--pv-blue);
+  --surface: #1b102c;
+  --theme-panel: linear-gradient(135deg, #27183cc7, #181023e0);
+  --theme-inset: #1a1029;
+  color-scheme: dark;
+  color: var(--pv-ink);
+  background-color: var(--pv-bg);
+  background-image:
+    radial-gradient(circle at 18% 20%, #cdabff30 0 1px, transparent 1.5px),
+    radial-gradient(circle at 76% 35%, #bd85ff25 0 1px, transparent 1.5px),
+    radial-gradient(ellipse at 95% 10%, #6b2db82e, transparent 55%),
+    radial-gradient(ellipse at 0% 80%, #47287821, transparent 55%);
+  background-size: 310px 280px, 420px 360px, 100% 100%, 100% 100%;
+  background-repeat: repeat, repeat, no-repeat, no-repeat;
+}
+
+.violet-theme .pv-header {
+  border-bottom: 1px solid var(--pv-line);
+}
+
+.violet-theme .pv-mark {
+  color: #faf7ff;
+  background: #211535;
+  box-shadow: inset 0 0 0 1px #b397ff38;
+}
+
+.violet-theme .pv-mark > span {
+  background: #bf9bff;
+  box-shadow: 0 0 9px #bf9bff80;
+}
+
+.violet-theme .pv-account {
+  background: #b998e306;
+}
+
+.violet-theme .pv-account:hover {
+  background: #b998e319;
+}
+
+.storefront.violet-theme .primary,
+.violet-theme .pv-primary {
+  color: #fff;
+  background: linear-gradient(110deg, #783ce4, #8e49e4);
+  box-shadow: inset 0 1px 0 #ffffff26, 0 5px 22px #692ab633;
+}
+
+.storefront.violet-theme .primary:hover,
+.violet-theme .pv-primary:hover {
+  filter: brightness(1.12);
+}
+
+.violet-theme .secondary-button {
+  color: #e5d6fb;
+  border-color: #b998e347;
+  background: #a47ae00a;
+}
+
+.violet-theme .secondary-button:hover {
+  background: #a47ae01f;
+}
+
+.violet-theme :is(input, textarea, select) {
+  caret-color: #d3b5ff;
+  accent-color: #a674ee;
+}
+
+.violet-theme :is(input, textarea)::placeholder {
+  color: #9787ad;
+  opacity: 1;
+}
+
+.violet-theme :is(input, textarea, select):focus-visible {
+  outline-color: #c79dff;
+}
+
+.violet-theme input:-webkit-autofill {
+  -webkit-text-fill-color: #f5efff;
+  -webkit-box-shadow: 0 0 0 1000px #1b102c inset;
+}
+
+.violet-theme :is(option, optgroup) {
+  color: #f5efff;
+  background: #1b102c;
+}
+
+.violet-theme :is(.card, .order-summary, .prompt-full-text) {
+  background: var(--theme-panel);
+  border-color: var(--pv-line);
+  box-shadow: inset 0 1px 0 #e7d1ff0a, 0 12px 40px #0301061f;
+}
+
+.storefront.violet-theme .library-section,
+.violet-theme :is(.detail, .usage-note, .verification-notice, .editor-disclosure, .editor-sidebar, .payment-setup-status, .guide-example, .transfer-recipient, .pending-payments-empty, .pv-notice, .recipient-summary) {
+  background: var(--theme-panel);
+  border-color: var(--pv-line);
+}
+
+.violet-theme .admin-stats > div {
+  background: var(--theme-panel);
+  border: 1px solid var(--pv-line);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.violet-theme .admin-table th {
+  color: #c4b2d9;
+  background: #221531;
+}
+
+.violet-theme .admin-table-wrap {
+  position: relative;
+}
+
+.violet-theme .admin-table tbody tr:hover {
+  background: #b487e808;
+}
+
+.violet-theme .prompt-editor input[readonly] {
+  color: #b9accd;
+  background: #120b1e;
+}
+
+.violet-theme .status-badge {
+  color: #d9c5f6;
+  background: #a774e626;
+  border: 1px solid #b58be52e;
+}
+
+.violet-theme .status-badge.published,
+.violet-theme .payment-success-icon {
+  color: #b4ebd0;
+  background: #3d9e7629;
+  border-color: #70cea33d;
+}
+
+.violet-theme .status-badge.draft {
+  color: #edcf9b;
+  background: #ad803329;
+  border-color: #d9aa5c38;
+}
+
+.violet-theme .status-badge.archived {
+  color: #b9accd;
+  background: #b998e312;
+}
+
+.violet-theme .form-error {
+  color: #ffb9cd;
+  background: #a9395521;
+  border-color: #d0718b45;
+}
+
+.violet-theme .save-message {
+  color: #b9edd2;
+  background: #3987631f;
+  border-color: #6bb58e3d;
+}
+
+.storefront.violet-theme .account-nav a,
+.violet-theme .admin-nav a {
+  color: #c6b7da;
+}
+
+.storefront.violet-theme .account-nav a:hover {
+  color: #fff;
+  background: #a970f51a;
+}
+
+.storefront.violet-theme .account-nav a[aria-current=page],
+.storefront.violet-theme .account-nav a[aria-current=page]:hover {
+  color: #fff;
+  background: #8b4cdd38;
+  box-shadow: inset 0 0 0 1px #b184ec4d;
+}
+
+.violet-theme .admin-nav a:hover {
+  color: #e3caff;
+}
+
+.violet-theme .pv-search {
+  background: #1b102ccc;
+  border-color: var(--pv-line);
+}
+
+.violet-theme .pv-categories button.is-active,
+.violet-theme .filters .active {
+  color: #fff;
+  background: #8b4cdd38;
+  box-shadow: inset 0 0 0 1px #b184ec4d;
+}
+
+.violet-theme .pv-categories button:not(.is-active):hover,
+.violet-theme .filters button:not(.active):hover {
+  color: #f5efff;
+  background: #a970f51a;
+}
+
+.violet-theme .pv-collection-heading :is(h1, h2) > span {
+  color: #d5b6ff;
+  background: #b482ee26;
+}
+
+.violet-theme .pv-image-tag {
+  color: #eadbff;
+  background: #180f26ed;
+  border: 1px solid #d0a7ff26;
+}
+
+.violet-theme :is(.pv-card-visual, .pv-product-image) {
+  background: #251838;
+}
+
+.storefront.violet-theme .store-cover-fallback {
+  color: #c9a5ff;
+}
+
+.violet-theme .legal-page .legal-draft {
+  color: #ddc8aa;
+  background: #8e65281c;
+  border: 1px solid #d9aa5c29;
+}
+
+.violet-theme .store-footer {
+  border-color: var(--pv-line);
+}
+
+.violet-theme .store-footer nav a:hover {
+  color: #dfc3ff;
+}
+
+@media (max-width: 380px) {
+  .violet-theme .pv-header:has(.admin-header-link) .pv-logo > span:last-child {
+    display: none;
+  }
+}

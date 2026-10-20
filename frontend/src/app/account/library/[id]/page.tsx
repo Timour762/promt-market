@@ -8,5 +8,5 @@ export const metadata={title:'Текст промпта | ПромтМаркет
 export default async function LibraryDetail({params}:{params:Promise<{id:string}>}){
   const {id}=await params;if(!/^[0-9a-f-]{36}$/i.test(id))notFound();
   const prompt=await accountFetch<LibraryPrompt>(`library/${id}`);
-  return <><SiteHeader/><main className="account-page"><AccountNav/><p className="eyebrow">МОЯ БИБЛИОТЕКА · ВЕРСИЯ {prompt.version}</p><h1>{prompt.title}</h1><p className="auth-intro">{prompt.status==='sandbox_paid'?'Тестовая оплата подтверждена.':'Учебный доступ.'} Замените поля в квадратных скобках своими данными и вставьте инструкцию в AI-помощника.</p><PromptText content={prompt.content} orderId={id}/><p><a className="card-link" href="/account/library">← Вернуться в библиотеку</a></p></main></>;
+  return <><SiteHeader/><main className="account-page"><AccountNav/><p className="eyebrow">МОЯ БИБЛИОТЕКА · ВЕРСИЯ {prompt.version}</p><h1>{prompt.title}</h1><p className="auth-intro">{prompt.status==='paid'?'Оплата подтверждена.':prompt.status==='sandbox_paid'?'Тестовая оплата подтверждена.':'Учебный доступ.'} Замените поля в квадратных скобках своими данными и вставьте инструкцию в AI-помощника.</p><PromptText content={prompt.content} orderId={id}/><p><a className="card-link" href="/account/library">← Вернуться в библиотеку</a></p></main></>;
 }

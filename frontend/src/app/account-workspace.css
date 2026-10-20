@@ -1,0 +1,344 @@
+.account-workspace {
+  --pv-ink: #f5efff;
+  --pv-muted: #b9accd;
+  --pv-line: #b998e329;
+  --pv-blue: #cba7ff;
+  --ink: var(--pv-ink);
+  --muted: var(--pv-muted);
+  --line: var(--pv-line);
+  --accent: var(--pv-blue);
+  --surface: #1b102c;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 100svh;
+  color: var(--pv-ink);
+  background:
+    radial-gradient(ellipse at 85% 20%, #6b2db82e, transparent 52%),
+    radial-gradient(ellipse at 0% 70%, #47287821, transparent 50%),
+    linear-gradient(180deg, #0d0819, #140b24 48%, #0d0819);
+}
+
+.account-workspace::before,
+.account-workspace::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.account-workspace::before {
+  background-image:
+    radial-gradient(circle at 18% 20%, #cdabff80 0 1px, transparent 2px),
+    radial-gradient(circle at 76% 35%, #bd85ff70 0 1px, transparent 2px),
+    radial-gradient(circle at 48% 70%, #d3baff60 0 1px, transparent 2px);
+  background-size: 265px 245px, 385px 325px, 325px 365px;
+  mask-image: linear-gradient(180deg, transparent, #000 15%, #000 80%, transparent);
+  opacity: .42;
+}
+
+.account-workspace::after {
+  inset: 80px -180px auto auto;
+  width: 680px;
+  height: 680px;
+  border-radius: 50%;
+  border: 1px solid #af7cea12;
+  box-shadow: 0 0 0 90px #b18ae508, 0 0 0 180px #b18ae505;
+  transform: rotateX(56deg) rotateZ(-24deg);
+}
+
+.storefront .account-workspace .account-content {
+  padding-top: 30px;
+  padding-bottom: 80px;
+}
+
+.account-workspace .account-nav {
+  border-color: var(--line);
+}
+
+.storefront .account-workspace .account-nav a {
+  color: #c6b7da;
+  border: 1px solid transparent;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.storefront .account-workspace .account-nav a:hover {
+  color: #fff;
+  background: #a970f51a;
+}
+
+.storefront .account-workspace .account-nav a[aria-current=page] {
+  color: #fff;
+  border-color: #b184ec4d;
+  background: #8b4cdd38;
+  box-shadow: inset 0 1px 0 #dec3ff14, 0 4px 20px #6b2da51a;
+}
+
+.storefront .account-workspace .account-layout {
+  gap: 28px;
+  align-items: stretch;
+}
+
+.storefront .account-workspace .profile-section,
+.storefront .account-workspace .library-section,
+.account-workspace .recipient-settings,
+.account-workspace .pending-payments {
+  position: relative;
+  min-width: 0;
+  padding: 30px;
+  border: 1px solid #b998e32e;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #27183cbd, #181023d6);
+  box-shadow: inset 0 1px 0 #e7d1ff0a, 0 14px 48px #03010626;
+}
+
+.storefront .account-workspace .library-section {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 100% 0%, #7437b52e, transparent 70%),
+    linear-gradient(135deg, #2c1946d9, #1d112fdf);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.account-workspace .profile-section h2,
+.account-workspace .library-section h2 {
+  color: #f6efff;
+  margin-top: 0;
+}
+
+.account-workspace .profile-section dl > div {
+  border-color: #b998e324;
+}
+
+.account-workspace .profile-section dd {
+  color: #ede2fc;
+}
+
+.account-workspace .eyebrow,
+.account-workspace .field-hint,
+.account-workspace .recipient-heading p:not(.eyebrow),
+.account-workspace .library-section > p:not(.eyebrow) {
+  color: #b9accd;
+}
+
+.account-library-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 154px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.account-library-heading .eyebrow {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 9px;
+}
+
+.account-library-heading h2 {
+  max-width: 14ch;
+  margin-bottom: 0;
+}
+
+.account-workspace .library-section > p:not(.eyebrow) {
+  margin-top: 14px;
+  line-height: 1.85;
+}
+
+.storefront .account-workspace .primary {
+  color: #fff;
+  background: linear-gradient(110deg, #783ce4, #8e49e4);
+  box-shadow: inset 0 1px 0 #ffffff26, 0 5px 22px #692ab633;
+}
+
+.storefront .account-workspace .primary:hover {
+  filter: brightness(1.12);
+}
+
+.storefront .account-workspace .secondary-button {
+  color: #e5d6fb;
+  border-color: #b998e347;
+  background: #a47ae00a;
+}
+
+.storefront .account-workspace .secondary-button:hover {
+  background: #a47ae01f;
+}
+
+.account-workspace .card-link {
+  color: #d0abff;
+}
+
+.account-workspace .card-link:hover {
+  color: #ecdfff;
+}
+
+.account-workspace .status-badge {
+  color: #d9c5f6;
+  background: #a774e626;
+  border: 1px solid #b58be52e;
+}
+
+.account-workspace .status-badge.published {
+  color: #b4ebd0;
+  background: #3d9e7629;
+  border-color: #70cea33d;
+}
+
+.account-workspace .recipient-settings {
+  max-width: none;
+}
+
+.account-workspace .verification-notice,
+.account-workspace .pending-payments-empty {
+  border-color: #b998e329;
+  background: #b58be50a;
+}
+
+.account-workspace .form-error {
+  color: #ffb9cd;
+  background: #a9395521;
+  border-color: #d0718b45;
+}
+
+.account-workspace .save-message {
+  color: #b9edd2;
+  background: #3987631f;
+  border-color: #6bb58e3d;
+}
+
+.account-workspace a:focus-visible,
+.account-workspace button:focus-visible {
+  outline: 2px solid #c79dff;
+  outline-offset: 5px;
+}
+
+.account-orbit {
+  position: relative;
+  width: 154px;
+  height: 168px;
+  perspective: 600px;
+  pointer-events: none;
+}
+
+.account-orbit-halo {
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #b480ff40, #8447e514 48%, transparent 72%);
+}
+
+.account-orbit-float {
+  position: absolute;
+  inset: 20px 9px 12px;
+  transform-style: preserve-3d;
+  animation: account-orbit-float 9s ease-in-out infinite;
+}
+
+.account-orbit-core {
+  position: absolute;
+  inset: 29%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 25%, #fff5ffed 0%, #e0bdffad 13%, transparent 42%),
+    radial-gradient(circle at 35% 30%, #c48cff, #8546d1 38%, #321247 76%);
+  box-shadow: inset -7px -9px 14px #160627c9, inset 2px 2px 8px #fff2ff73, 0 0 24px #b480ff6b;
+}
+
+.account-orbit-cage {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  animation: account-orbit-spin 28s linear infinite;
+}
+
+.account-orbit-ring {
+  position: absolute;
+  inset: 5%;
+  border: 1px solid #cf9dffc4;
+  border-radius: 50%;
+  box-shadow: 0 0 7px #b16bff33, inset 0 0 5px #be85ff21;
+  transform-style: preserve-3d;
+}
+
+.account-orbit-ring-one { transform: rotateX(70deg); }
+.account-orbit-ring-two { transform: rotateY(65deg) rotateX(20deg); border-color: #efc9ffb3; }
+.account-orbit-ring-three { transform: rotateY(-60deg) rotateX(-25deg); }
+.account-orbit-ring-four { transform: rotateX(40deg) rotateY(-15deg); opacity: .5; }
+.account-orbit-ring-five { transform: rotateX(-45deg) rotateY(35deg); opacity: .5; }
+
+.account-orbit-ring i {
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #f4dfff;
+  box-shadow: 0 0 10px 2px #c178ffb3;
+}
+
+.account-orbit-ring-two i { left: 8%; top: 18%; width: 4px; height: 4px; }
+.account-orbit-ring-three i { left: auto; right: 0; top: 49%; }
+
+.account-orbit-shadow {
+  position: absolute;
+  inset: auto 19% 0;
+  height: 12px;
+  background: radial-gradient(ellipse, #9955e929, transparent 70%);
+  animation: account-orbit-shadow 9s ease-in-out infinite;
+}
+
+.account-orbit[data-motion=paused] * {
+  animation-play-state: paused;
+}
+
+@keyframes account-orbit-spin {
+  from { transform: rotateX(-20deg) rotateY(0deg) rotateZ(-15deg); }
+  to { transform: rotateX(-20deg) rotateY(360deg) rotateZ(345deg); }
+}
+
+@keyframes account-orbit-float {
+  0%, 100% { transform: translateY(0) rotateZ(-5deg); }
+  50% { transform: translateY(-9px) rotateZ(5deg); }
+}
+
+@keyframes account-orbit-shadow {
+  0%, 100% { opacity: .6; transform: scaleX(.95); }
+  50% { opacity: .3; transform: scaleX(.8); }
+}
+
+@media (max-width: 1050px) and (min-width: 801px) {
+  .account-library-heading { grid-template-columns: minmax(0, 1fr) 115px; gap: 5px; }
+  .account-orbit { width: 115px; height: 135px; }
+}
+
+@media (max-width: 550px) {
+  .storefront .account-workspace .account-content { padding-top: 24px; padding-bottom: 45px; }
+  .storefront .account-workspace .profile-section,
+  .storefront .account-workspace .library-section,
+  .account-workspace .recipient-settings,
+  .account-workspace .pending-payments { padding: 23px; border-radius: 14px; }
+  .account-library-heading { grid-template-columns: minmax(0, 1fr) 114px; gap: 4px; }
+  .account-orbit { width: 114px; height: 138px; }
+  .storefront .account-workspace .account-library-heading h2 { font-size: 22px; }
+  .account-library-heading .eyebrow { font-size: 8px; letter-spacing: 1.1px; }
+  .account-workspace .library-section > p:not(.eyebrow) { font-size: 13px; }
+}
+
+@media (max-width: 360px) {
+  .account-library-heading { grid-template-columns: minmax(0, 1fr) 86px; }
+  .account-orbit { width: 86px; height: 115px; }
+  .account-orbit-float { inset: 20px 0 9px; }
+  .storefront .account-workspace .account-library-heading h2 { font-size: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-orbit * { animation: none !important; }
+  .account-orbit-cage { transform: rotateX(-20deg) rotateY(25deg) rotateZ(-15deg); }
+  .storefront .account-workspace .account-nav a { transition: none; }
+}
