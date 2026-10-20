@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
-import { isIP } from 'node:net';
 import { NextRequest, NextResponse } from 'next/server';
+import { trustedClientAddress } from '../../../../lib/client-ip';
 const backend = process.env.BACKEND_URL ?? 'http://127.0.0.1:8107';
 const origins = (process.env.AUTH_ALLOWED_ORIGINS ?? 'http://localhost:3107,http://127.0.0.1:3107').split(',');
 type Context = { params: Promise<{ action: string }> };
@@ -33,9 +33,8 @@ async function proxy(request: NextRequest, context: Context) {
     body = Buffer.concat(chunks).toString('utf8');
     const proxySecret = process.env.AUTH_PROXY_SECRET;
     if (proxySecret) {
-      // Caddy overwrites forwarded client headers; web/API ports stay private.
-      const address = request.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? '';
-      if (!isIP(address)) return NextResponse.json({ detail: 'Не удалось определить источник запроса' }, { status: 503 });
+      const address = trustedClientAddress(request.headers, process.env.AUTH_CLIENT_IP_SOURCE ?? 'caddy');
+      if (!address) return NextResponse.json({ detail: 'Не удалось определить источник запроса' }, { status: 503 });
       const identity = createHmac('sha256', proxySecret).update(address).digest('hex');
       const signature = createHmac('sha256', proxySecret).update(`pm-client:${identity}`).digest('hex');
       headers.set('x-pm-client', identity);

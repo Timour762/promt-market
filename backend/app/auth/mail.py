@@ -2,6 +2,7 @@ import json
 import logging
 import smtplib
 import ssl
+from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
 from email.message import EmailMessage
 from email.utils import format_datetime
 from datetime import datetime, timezone
@@ -12,10 +13,58 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.concurrency import run_in_threadpool
 from app.auth.recovery_models import EmailOutbox
+from app.auth.google_mail import send_google_mail
 from app.core.config import get_settings
 from app.db.session import SessionFactory
 
 logger = logging.getLogger(__name__)
+BREVO_EMAIL_URL = "https://api.brevo.com/v3/smtp/email"
+
+
+def message_text(payload: dict) -> str:
+    text = payload["text"]
+    if payload.get("link"):
+        text += "\n\n" + payload["link"]
+    return text + "\n\nЕсли вы не запрашивали это действие, проигнорируйте письмо."
+
+
+class NoMailRedirects(HTTPRedirectHandler):
+    def redirect_request(self, request, response, code, message, headers, new_url):
+        # Credentials must only ever be sent to the fixed Brevo HTTPS endpoint.
+        return None
+
+
+def send_brevo_message(message_id: str, payload: dict):
+    settings = get_settings()
+    if not settings.brevo_api_key or not settings.brevo_api_key.get_secret_value().strip() or not settings.brevo_from:
+        raise RuntimeError("Brevo mail is not configured")
+    body = {
+        "sender": {"email": str(settings.brevo_from), "name": settings.brevo_from_name},
+        "to": [{"email": payload["email"]}],
+        "subject": payload["subject"],
+        "textContent": message_text(payload),
+    }
+    request = Request(BREVO_EMAIL_URL, data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+        headers={"api-key": settings.brevo_api_key.get_secret_value(),
+                 "Content-Type": "application/json", "Accept": "application/json"}, method="POST")
+    opener = build_opener(HTTPSHandler(context=ssl.create_default_context()), NoMailRedirects())
+    try:
+        with opener.open(request, timeout=15) as response:
+            if response.status != 201:
+                raise ValueError("Unexpected mail response")
+            raw = response.read(8193)
+            if len(raw) > 8192:
+                raise ValueError("Unexpected mail response size")
+            result = json.loads(raw)
+            if not isinstance(result, dict) or not isinstance(result.get("messageId"), str) or not result["messageId"].strip():
+                raise ValueError("Missing mail acknowledgement")
+    except Exception:
+        # Never expose the API key, message body, recipient or provider response.
+        raise RuntimeError("Brevo mail delivery failed") from None
+
+
+def send_google_message(message_id: str, payload: dict):
+    send_google_mail(message_id, payload["email"], payload["subject"], message_text(payload))
 
 def cipher() -> Fernet:
     return Fernet(get_settings().mail_encryption_key.get_secret_value().encode())
@@ -45,11 +94,7 @@ def send_smtp_message(message_id: str, payload: dict):
     message["Subject"] = payload["subject"]
     message["Date"] = format_datetime(datetime.now(timezone.utc))
     message["Message-ID"] = f"<{message_id}@{str(settings.smtp_from).split('@')[1]}>"
-    text = payload["text"]
-    if payload.get("link"):
-        text += "\n\n" + payload["link"]
-    text += "\n\nЕсли вы не запрашивали это действие, проигнорируйте письмо."
-    message.set_content(text)
+    message.set_content(message_text(payload))
     context = ssl.create_default_context()
     smtp_type = smtplib.SMTP_SSL if settings.smtp_security == "ssl" else smtplib.SMTP
     kwargs = {"timeout": 15}
@@ -74,7 +119,8 @@ async def deliver_mail():
                 message.attempts += 1
                 try:
                     payload = json.loads(cipher().decrypt(message.encrypted_payload.encode()))
-                    sender = send_smtp_message if get_settings().mail_delivery == "smtp" else save_local_message
+                    sender = {"smtp": send_smtp_message, "brevo": send_brevo_message,
+                              "google_apps_script": send_google_message, "local": save_local_message}[get_settings().mail_delivery]
                     await run_in_threadpool(sender, str(message.id), payload)
                     message.delivered_at = datetime.now(timezone.utc)
                     message.last_error = None

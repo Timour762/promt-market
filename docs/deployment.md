@@ -1,5 +1,7 @@
 # Подготовка размещения
 
+Для выбранного бесплатного размещения Render + Neon используется отдельная [инструкция Render](render.md). Описанный ниже Docker Compose предназначен для VPS, а не для формы Render Web Service.
+
 Подготовлены Dockerfile для API и Next standalone, deploy/compose.yaml: PostgreSQL, миграции, API, mail-worker, web и Caddy TLS. Docker окружение ещё не запускалось. Инфраструктура не оплачена и не создана.
 
 На выбранном сервере в РФ: получить исходники, скопировать deploy/.env.example в deploy/.env и заполнить частную конфигурацию, настроить A/AAAA DNS, открыть 80/443 и ограничить SSH. Не открывать PostgreSQL/API наружу. DATABASE_URL и POSTGRES_PASSWORD должны совпадать, специальные символы пароля в URI должны быть закодированы. Сгенерировать CSRF_SECRET и Fernet ключ без публикации. LEGAL_READY=false намеренно блокирует production до завершения документов; не выставлять true только ради старта.
