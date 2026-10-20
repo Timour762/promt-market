@@ -39,4 +39,3 @@ USER appuser
 EXPOSE 10000
 STOPSIGNAL SIGTERM
 CMD ["python", "/app/supervisor.py"]
-
