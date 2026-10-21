@@ -1,5 +1,6 @@
 """Process-level checks that do not need Docker, a database, or secrets."""
 from pathlib import Path
+import os
 import signal
 import sys
 import tempfile
@@ -7,7 +8,40 @@ import threading
 import unittest
 from unittest.mock import patch
 
-from supervisor import Service, Supervisor, prepare_environment
+from supervisor import Service, Supervisor, prepare_environment, main
+
+
+class LaunchModeTests(unittest.TestCase):
+    @patch('supervisor.signal.signal')
+    @patch.object(Supervisor, 'run', return_value=0)
+    def test_preview_starts_only_web_without_migrations_even_with_draft_documents(self, run, _signal):
+        with patch.dict(os.environ, {
+            'RENDER_EXTERNAL_URL': 'https://shop.example', 'PUBLIC_PREVIEW': 'true',
+            'APP_ENV': 'production', 'LEGAL_READY': 'false',
+        }, clear=True):
+            self.assertEqual(main(), 0)
+            self.assertEqual(os.environ['LEGAL_READY'], 'false')
+        migration, services = run.call_args.args
+        self.assertIsNone(migration)
+        self.assertEqual([service.name for service in services], ['web'])
+        self.assertEqual(services[0].env['PUBLIC_PREVIEW'], 'true')
+
+    @patch('supervisor.signal.signal')
+    @patch.object(Supervisor, 'run', return_value=0)
+    def test_default_mode_keeps_full_store_startup(self, run, _signal):
+        with patch.dict(os.environ, {'RENDER_EXTERNAL_URL': 'https://shop.example'}, clear=True):
+            self.assertEqual(main(), 0)
+        migration, services = run.call_args.args
+        self.assertEqual(migration.name, 'migrations')
+        self.assertEqual([service.name for service in services], ['API', 'mail worker', 'web'])
+
+    @patch.object(Supervisor, 'run')
+    def test_invalid_preview_flag_does_not_start_anything(self, run):
+        with patch.dict(os.environ, {
+            'RENDER_EXTERNAL_URL': 'https://shop.example', 'PUBLIC_PREVIEW': 'yes',
+        }, clear=True):
+            self.assertEqual(main(), 1)
+        run.assert_not_called()
 
 
 class OriginTests(unittest.TestCase):

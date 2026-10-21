@@ -1,4 +1,4 @@
-"""Run migrations, then supervise all processes in one Render web service."""
+"""Supervise a catalog-only preview or the full store in one Render service."""
 from __future__ import annotations
 
 import os
@@ -78,17 +78,18 @@ class Supervisor:
         print(f"Started {service.name}.", flush=True)
         return process
 
-    def run(self, migration: Service, services: tuple[Service, ...]) -> int:
+    def run(self, migration: Service | None, services: tuple[Service, ...]) -> int:
         try:
-            process = self.start(migration)
-            while process.poll() is None:
-                if self.stop_signal is not None:
-                    return 128 + self.stop_signal
-                time.sleep(POLL_SECONDS)
-            if process.returncode != 0:
-                print("Database migrations failed; application was not started.", file=sys.stderr, flush=True)
-                return 1
-            self.children.remove((migration.name, process))
+            if migration is not None:
+                process = self.start(migration)
+                while process.poll() is None:
+                    if self.stop_signal is not None:
+                        return 128 + self.stop_signal
+                    time.sleep(POLL_SECONDS)
+                if process.returncode != 0:
+                    print("Database migrations failed; application was not started.", file=sys.stderr, flush=True)
+                    return 1
+                self.children.remove((migration.name, process))
 
             for service in services:
                 if self.stop_signal is not None:
@@ -148,6 +149,10 @@ def main() -> int:
     except ValueError:
         print("PORT must be an integer between 1024 and 65535.", file=sys.stderr)
         return 1
+    preview = os.environ.get("PUBLIC_PREVIEW", "false")
+    if preview not in ("true", "false"):
+        print("PUBLIC_PREVIEW must be true or false.", file=sys.stderr)
+        return 1
 
     backend = Path("/app/backend")
     frontend_env = os.environ.copy()
@@ -158,6 +163,9 @@ def main() -> int:
     supervisor = Supervisor()
     signal.signal(signal.SIGTERM, supervisor.request_stop)
     signal.signal(signal.SIGINT, supervisor.request_stop)
+    if preview == "true":
+        print("Public preview: catalog only; API, database and mail worker are disabled.", flush=True)
+        return supervisor.run(None, (Service("web", ("node", "server.js"), Path("/app/web"), frontend_env),))
     return supervisor.run(
         Service("migrations", (sys.executable, "-m", "alembic", "upgrade", "head"), backend),
         (
