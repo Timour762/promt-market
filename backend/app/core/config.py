@@ -45,6 +45,7 @@ class Settings(BaseSettings):
     google_mail_url: str | None = None
     google_mail_secret: SecretStr | None = Field(default=None, min_length=32)
     legal_ready: bool = False
+    registration_ready: bool = False
 
     @model_validator(mode="after")
     def validate_runtime(self):
@@ -61,8 +62,10 @@ class Settings(BaseSettings):
                 raise ValueError("Production requires HTTPS and secure cookies")
             if self.local_test_access_enabled or self.sber_sandbox_enabled or self.sber_webhook_enabled:
                 raise ValueError("Sandbox and educational access must be disabled in production")
-            if self.mail_delivery not in ("smtp", "brevo", "google_apps_script") or not self.legal_ready:
-                raise ValueError("Production requires configured mail and finalized legal documents")
+            if self.mail_delivery not in ("smtp", "brevo", "google_apps_script") or not (self.legal_ready or self.registration_ready):
+                raise ValueError("Production requires configured mail and finalized account privacy information")
+            if self.platega_enabled and not self.legal_ready:
+                raise ValueError("Payments require finalized sales documents")
             if any(not origin.startswith("https://") for origin in self.allowed_origins):
                 raise ValueError("Production origins must use HTTPS")
         return self

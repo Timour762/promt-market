@@ -25,6 +25,12 @@ class PaymentAction(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+def require_sales():
+    settings = get_settings()
+    if settings.app_env == "production" and not settings.legal_ready:
+        raise HTTPException(503, "Продажи ещё не открыты. Личный кабинет доступен.")
+
+
 async def own_order(order_id, db, user, *, lock=False):
     query = select(Order).where(Order.id == order_id, Order.user_id == user.id)
     order = await db.scalar(query.with_for_update() if lock else query)
@@ -61,6 +67,7 @@ async def details(order_id: UUID, db: Database, user: CurrentUser):
 
 @router.post("/me/orders/{order_id}/manual-payment", dependencies=[Depends(require_csrf)])
 async def start(order_id: UUID, data: PaymentAction, db: Database, user: CurrentUser):
+    require_sales()
     order = await own_order(order_id, db, user, lock=True)
     if order.status != "pending":
         return payment_status(order)
@@ -99,6 +106,7 @@ async def pending(db: Database, actor: Admin, offset: int = Query(default=0, ge=
 
 @router.post("/admin/orders/{order_id}/confirm-payment", dependencies=[Depends(require_csrf)])
 async def confirm(order_id: UUID, data: PaymentAction, db: Database, actor: Admin):
+    require_sales()
     order = await db.scalar(select(Order).where(Order.id == order_id).with_for_update())
     if order is None:
         raise HTTPException(404, "Заказ не найден")

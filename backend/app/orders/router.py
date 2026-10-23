@@ -25,6 +25,9 @@ def test_access_enabled():
     return settings.local_test_access_enabled and urlparse(settings.public_web_url).hostname in {"localhost","127.0.0.1"} and not settings.cookie_secure
 @router.post("/me/orders",dependencies=[Depends(require_csrf)])
 async def create(data:CreateOrder,db:Database,user:CurrentUser):
+    settings=get_settings()
+    if settings.app_env == "production" and not settings.legal_ready:
+        raise HTTPException(503,"Продажи ещё не открыты. Личный кабинет доступен.")
     # Serialize retries per purchaser; never accept client prices or status.
     await db.scalar(select(User).where(User.id==user.id).with_for_update())
     existing=await db.scalar(select(Order).where(Order.user_id==user.id,Order.prompt_id==data.prompt_id))

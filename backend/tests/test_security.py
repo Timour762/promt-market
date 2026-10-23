@@ -19,6 +19,7 @@ from app.auth.security import password_hasher,token_hash,_attempts
 from app.catalog.models import Category,Prompt,PromptVersion
 from app.orders.models import Order
 from app.payments.models import Payment
+from app.payments.manual_models import ManualPayment
 from app.admin.models import AuditLog
 
 ORIGIN="http://localhost:3107"
@@ -66,6 +67,31 @@ class SecurityFixture(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code,200,response.text)
         return client
 class SecurityTests(SecurityFixture):
+    async def test_accounts_only_mode_does_not_accept_manual_payments(self):
+        await self.register(self.client)
+        order=(await self.post(self.client, '/api/v1/me/orders', {"prompt_id": "fixture-prompt"})).json()
+        admin=await self.admin()
+        try:
+            with patch('app.payments.manual.get_settings', return_value=MagicMock(app_env='production', legal_ready=False)):
+                start=await self.post(self.client, '/api/v1/me/orders/'+order['id']+'/manual-payment', {})
+                confirm=await self.post(admin, '/api/v1/admin/orders/'+order['id']+'/confirm-payment', {})
+            self.assertEqual(start.status_code, 503)
+            self.assertEqual(confirm.status_code, 503)
+            async with self.factory() as db:
+                self.assertEqual((await db.get(Order, __import__('uuid').UUID(order['id']))).status, 'pending')
+                self.assertEqual(await db.scalar(select(func.count()).select_from(ManualPayment)), 0)
+        finally:
+            await admin.aclose()
+
+    async def test_accounts_only_mode_does_not_create_orders(self):
+        await self.register(self.client)
+        settings = MagicMock(app_env='production', legal_ready=False)
+        with patch('app.orders.router.get_settings', return_value=settings):
+            response = await self.post(self.client, '/api/v1/me/orders', {"prompt_id": "fixture-prompt"})
+        self.assertEqual(response.status_code, 503)
+        async with self.factory() as db:
+            self.assertEqual(await db.scalar(select(func.count()).select_from(Order)), 0)
+
     async def test_public_content_and_csrf(self):
         response=await self.client.get('/api/v1/prompts')
         self.assertEqual(response.status_code,200)
@@ -153,7 +179,7 @@ class SecurityTests(SecurityFixture):
             db.add(PaymentRecipient(id=1, recipient_name='Fixture Recipient', bank_name='Fixture Bank',
                 encrypted_card=Fernet(key).encrypt(b'4242424242424242').decode(), card_last4='4242', revision=1))
             await db.commit()
-        return SimpleNamespace(payment_details_encryption_key=SecretStr(key.decode()))
+        return SimpleNamespace(payment_details_encryption_key=SecretStr(key.decode()), app_env='test', legal_ready=False)
 
     async def test_manual_payment_snapshot_queue_and_concurrent_confirmation(self):
         from cryptography.fernet import Fernet

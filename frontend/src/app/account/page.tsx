@@ -24,7 +24,7 @@ export default async function AccountPage({searchParams}:{searchParams:Promise<{
     <div className="account-layout">
       <section className="profile-section" aria-labelledby="profile-title"><h2 id="profile-title">Ваш профиль</h2>
         <dl><div><dt>Имя</dt><dd>{user.name}</dd></div><div><dt>Email</dt><dd>{user.email ?? 'Не указан'}</dd></div><div><dt>Подтверждение email</dt><dd>{!user.email ? 'Email не указан' : user.email_verified ? 'Подтверждён' : 'Пока не подтверждён'}</dd></div></dl>
-        {user.email && !user.email_verified && <VerificationNotice/>}
+        {user.email && !user.email_verified && <VerificationNotice localMode={process.env.APP_ENV !== 'production'}/>}
         {user.role === 'admin' && <><p><a className="card-link" href="#platega-settings">Оплата через Platega ↓</a></p><p><a className="card-link" href="/admin">Управление магазином ↗</a></p></>}
         <LogoutButton/>
       </section>

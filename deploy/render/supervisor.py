@@ -167,7 +167,7 @@ def main() -> int:
         print("Public preview: catalog only; API, database and mail worker are disabled.", flush=True)
         return supervisor.run(None, (Service("web", ("node", "server.js"), Path("/app/web"), frontend_env),))
     return supervisor.run(
-        Service("migrations", (sys.executable, "-m", "alembic", "upgrade", "head"), backend),
+        Service("migrations", (sys.executable, "-m", "app.bootstrap"), backend),
         (
             Service("API", (sys.executable, "-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "8107", "--no-access-log"), backend),
             Service("mail worker", (sys.executable, "-m", "app.mail_worker"), backend),

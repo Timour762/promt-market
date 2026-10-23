@@ -33,6 +33,7 @@ class LaunchModeTests(unittest.TestCase):
             self.assertEqual(main(), 0)
         migration, services = run.call_args.args
         self.assertEqual(migration.name, 'migrations')
+        self.assertEqual(migration.command, (sys.executable, '-m', 'app.bootstrap'))
         self.assertEqual([service.name for service in services], ['API', 'mail worker', 'web'])
 
     @patch.object(Supervisor, 'run')

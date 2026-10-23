@@ -10,6 +10,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getPrompt } from '../../../lib/catalog';
 import { isPublicPreview } from '../../../lib/public-preview';
+import { isCheckoutAvailable } from '../../../lib/checkout';
 
 type PageProps = { params: Promise<{ slug: string }> };
 const inputs: Record<string, string[]> = {
@@ -33,7 +34,7 @@ export default async function PromptPage({ params }: PageProps) {
   if (!prompt) notFound();
   const isGenerator = prompt.id === 'image' || prompt.id === 'video';
   const cover=covers[prompt.id];
-  const preview=isPublicPreview();
+  const preview=isPublicPreview() || !isCheckoutAvailable();
   return <><a className="skip" href="#prompt-content">Перейти к описанию</a><SiteHeader/><main id="prompt-content" className="product-page"><nav className="breadcrumbs" aria-label="Хлебные крошки"><a href="/">Главная</a><span aria-hidden="true">/</span><a href="/catalog">Каталог</a><span aria-hidden="true">/</span><span>{prompt.category}</span></nav>
     <article className="pv-product store-product"><div className="pv-product-image">{cover?<Image src={cover.src} alt={cover.alt} fill sizes="(max-width:800px) calc(100vw - 48px), 650px" quality={90}/>:<PromptCover id={prompt.id} category={prompt.category} label="ГОТОВАЯ ИНСТРУКЦИЯ"/>}</div><div className="pv-product-body"><p className="pv-kicker">{prompt.category} / Готовая инструкция</p><h1>{prompt.title}</h1><p className="pv-product-lead">{prompt.description}</p><div className="pv-result"><span>Вы получите</span><h2>{prompt.result}</h2><p>Готовую инструкцию с полями для ваших исходных данных. Она помогает задать структуру ответа AI и сформулировать задачу.</p></div><div className="store-product-price"><strong>{prompt.price_minor===null?'Скоро в продаже':new Intl.NumberFormat('ru-RU',{style:'currency',currency:prompt.currency}).format(prompt.price_minor/100)}</strong><span>{prompt.price_minor===null?'Цена ещё не назначена':'За готовую инструкцию'}</span></div>{preview?<a className="secondary-button" href="/preview">Покупки скоро откроются</a>:prompt.price_minor!==null?<OrderButton promptId={prompt.id}/>:<a className="primary" href="/catalog">Выбрать другой промпт ↗</a>}<p className="pv-caption">{preview?'Сейчас доступны описание и примеры. Полный текст можно будет приобрести после открытия магазина.':'Полный текст появится в вашей библиотеке после подтверждения оплаты.'}</p></div></article>
     {promptGuides[prompt.id]&&<PromptGuide guide={promptGuides[prompt.id]}/>}

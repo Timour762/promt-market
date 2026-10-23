@@ -32,6 +32,15 @@ def configured(**overrides):
 
 
 class MailSettingsTests(unittest.TestCase):
+    def test_accounts_only_mode_requires_explicit_readiness_and_keeps_payment_guard(self):
+        accounts = PRODUCTION_SETTINGS | {"legal_ready": False, "registration_ready": True}
+        self.assertTrue(configured(**accounts).registration_ready)
+        self.assertFalse(configured(**accounts).legal_ready)
+        for overrides in [{"mail_delivery": "local"}, {"cookie_secure": False},
+                          {"auth_proxy_secret": None}, {"platega_enabled": True}]:
+            with self.subTest(overrides=overrides), self.assertRaises(ValidationError):
+                configured(**(accounts | overrides))
+
     def test_brevo_requires_key_and_sender(self):
         for overrides in [{"brevo_api_key": None}, {"brevo_api_key": ""}, {"brevo_api_key": "   "},
                           {"brevo_from": None}, {"brevo_from": ""}, {"brevo_from": "invalid"}]:

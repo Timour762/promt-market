@@ -4,6 +4,7 @@ import StoreFooter from '../../../components/StoreFooter';
 import PromptCatalog from '../../../components/PromptCatalog';
 import { getCatalog } from '../../../lib/catalog';
 import { isPublicPreview } from '../../../lib/public-preview';
+import { isCheckoutAvailable } from '../../../lib/checkout';
 
 export const metadata: Metadata = {
   title: 'Коллекция промптов | ПромтМаркет',
@@ -34,7 +35,7 @@ export default async function CollectionPage() {
             ))}
           </ol>
         </section>
-        <aside className="launch-note">{isPublicPreview() ? 'Публичная витрина. Изучайте описания и примеры — регистрация и покупки откроются позже.' : 'Оплата в рублях через Platega. Доступ к промпту открывается автоматически после подтверждения платежа.'}</aside>
+        <aside className="launch-note">{isPublicPreview() ? 'Публичная витрина. Изучайте описания и примеры — регистрация и покупки откроются позже.' : !isCheckoutAvailable() ? 'Создайте аккаунт, чтобы пользоваться личным кабинетом. Покупки откроются после подключения оплаты.' : 'Оплата в рублях через Platega. Доступ к промпту открывается автоматически после подтверждения платежа.'}</aside>
       </main>
       <StoreFooter />
     </>
