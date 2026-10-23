@@ -1,0 +1,38 @@
+.neural-document-links{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:24px;max-width:550px;font-size:11px;line-height:1.65;color:#c5bcd6}
+.neural-document-links a:hover{text-decoration:underline;color:#fff}
+.storefront .store-footer{flex-wrap:wrap;gap:20px 28px}
+.store-footer-identity{display:grid;gap:9px}
+.storefront .store-footer .store-support-email{font-size:12px;color:var(--pv-muted);overflow-wrap:anywhere}
+.storefront .store-footer nav{display:flex;flex-wrap:wrap;gap:12px 22px;max-width:650px}
+.store-refunds-link{font-size:11px;color:var(--pv-muted)}
+.storefront .legal-page h1,.storefront .pricing-page h1{font-size:clamp(30px,4.5vw,50px);line-height:1.15;overflow-wrap:anywhere}
+.legal-revision{font-size:13px;color:var(--pv-muted);overflow-wrap:anywhere}
+.storefront .legal-nav{display:flex;flex-wrap:wrap;gap:10px 18px;line-height:1.6}
+.storefront .legal-nav a[aria-current=page]{color:#d6b6ff;text-decoration:underline;text-underline-offset:4px}
+.storefront .legal-page section p{white-space:pre-line;line-height:1.9}
+.support-contact{display:grid;gap:10px;padding:26px;border:1px solid var(--pv-line);border-radius:16px;background:#9d65ef12;margin:32px 0}
+.support-contact p{margin:0}.support-contact>a{font-size:clamp(19px,3vw,28px);font-weight:600;color:#d6b6ff;overflow-wrap:anywhere}
+.support-contact span{font-size:13px;color:var(--pv-muted)}
+.collection-price-note{font-size:13px;line-height:1.8;color:var(--pv-muted);margin:0 0 26px}
+.storefront main.pricing-page{max-width:1208px;padding-top:38px;padding-bottom:60px}
+.pricing-lead{max-width:740px;font-size:18px;line-height:1.8;color:var(--pv-muted)}
+.pricing-facts{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0}
+.pricing-facts span{border:1px solid var(--pv-line);border-radius:999px;padding:10px 16px;font-size:12px;background:#a66af012}
+.pricing-status{border-left:3px solid #a66af0;padding:12px 18px;background:#a66af00c;font-size:14px;line-height:1.8;margin-bottom:32px}
+.pricing-table-wrap{overflow-x:auto;border:1px solid var(--pv-line);border-radius:16px}
+.pricing-table{width:100%;border-collapse:collapse;table-layout:fixed;text-align:left;font-size:14px}
+.pricing-table caption{text-align:left;padding:20px;color:var(--pv-muted);font-size:13px;border-bottom:1px solid var(--pv-line)}
+.pricing-table th,.pricing-table td{padding:23px 20px;border-bottom:1px solid var(--pv-line);vertical-align:top;overflow-wrap:anywhere}
+.pricing-table thead th{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:1px;color:var(--pv-muted);background:#a66af009}
+.pricing-table th:first-child{width:33%}.pricing-table th:last-child{width:19%}
+.pricing-table tbody th{font-size:16px;font-weight:550}.pricing-table tbody th a:hover{color:#d6b6ff}
+.pricing-table td{line-height:1.7}.pricing-table td>span{display:block;color:var(--pv-muted);margin-top:8px}
+.pricing-table small{display:block;font-size:11px;font-weight:400;color:var(--pv-muted);margin-top:9px}
+.pricing-table td strong{font-size:23px;font-weight:600;white-space:nowrap}
+.pricing-table tbody tr:last-child>*{border-bottom:0}
+.pricing-details{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin:42px 0}
+.pricing-details h2,.pricing-support h2{font-size:23px;font-weight:550;letter-spacing:-.5px}
+.pricing-details p,.pricing-support p{font-size:14px;line-height:1.9;color:var(--pv-muted)}
+.pricing-support{border-top:1px solid var(--pv-line);padding-top:20px}
+@media(max-width:650px){.pricing-table th,.pricing-table td{padding:16px 10px}.pricing-table{font-size:12px}.pricing-table tbody th{font-size:13px}.pricing-table th:first-child{width:35%}.pricing-table th:last-child{width:24%}.pricing-table td strong{font-size:18px}.pricing-table thead th{font-size:9px;letter-spacing:.3px}.pricing-details{grid-template-columns:1fr;gap:15px}.pricing-lead{font-size:16px}.storefront .store-footer nav{margin-left:0}.neural-document-links{font-size:10px}}
+@media print{.legal-page .back-link,.legal-nav,.pv-header,.store-footer{display:none}.storefront .legal-page{color:#000;background:#fff;max-width:none}.legal-page h1,.legal-page h2,.legal-page p{color:#000!important}.legal-page section{break-inside:avoid}}

@@ -19,6 +19,7 @@ export default async function CollectionPage() {
       <a className="skip" href="#catalog">Перейти к каталогу</a>
       <SiteHeader />
       <main className="pv-main collection-page">
+        <p className="collection-price-note">Готовая инструкция — разовая покупка, без подписки. <a className="card-link" href="/pricing">Все цены и состав покупки ↗</a></p>
         <PromptCatalog catalog={catalog} />
         <section className="pv-how" id="how">
           <div>

@@ -1,1 +1,10 @@
-export default function StoreFooter(){return <footer className="store-footer"><a className="store-footer-brand" href="/">ПромтМаркет</a><span>Точные слова для ваших идей.</span><nav aria-label="Документы магазина"><a href="/legal/privacy">Конфиденциальность</a><a href="/legal/offer">Условия</a><a href="/legal/refunds">Возвраты</a><a href="/legal/contacts">Контакты</a></nav></footer>;}
+import StoreLinks from './StoreLinks';
+import { shopContact } from '../lib/legal';
+
+export default function StoreFooter() {
+  return <footer className="store-footer">
+    <div className="store-footer-identity"><a className="store-footer-brand" href="/">ПромтМаркет</a><a className="store-support-email" href={`mailto:${shopContact.email}`}>{shopContact.email}</a></div>
+    <StoreLinks />
+    <a className="store-refunds-link" href="/legal/refunds">Обращения и возвраты</a>
+  </footer>;
+}

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import StoreLinks from './StoreLinks';
 
 export default function NeuralHero({ variant = 'home' }: { variant?: 'home' | 'catalog' }) {
   const isCatalog = variant === 'catalog';
@@ -35,6 +36,7 @@ export default function NeuralHero({ variant = 'home' }: { variant?: 'home' | 'c
             </a>
           </div>
           <p className="neural-hero-caption">Для бизнеса, кода и творчества</p>
+          <StoreLinks className="neural-document-links" />
         </div>
       </div>
     </section>

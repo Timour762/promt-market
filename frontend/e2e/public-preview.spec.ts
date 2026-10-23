@@ -48,7 +48,7 @@ test('private pages and all mutations are disabled even by direct requests', asy
 });
 
 test('public HTML and documents describe the showcase without account cookies', async ({ request }) => {
-  for (const path of ['/', '/catalog', '/catalog/collection', '/prompts/python', '/prompts/business', '/legal/privacy', '/legal/offer', '/legal/contacts']) {
+  for (const path of ['/', '/catalog', '/catalog/collection', '/pricing', '/prompts/python', '/prompts/business', '/legal/privacy', '/legal/terms', '/legal/offer', '/legal/contacts']) {
     const response = await request.get(path, { headers: { Cookie: 'pm_session=unused-preview-session' } });
     expect(response.status(), path).toBe(200);
     expect(response.headers()['x-robots-tag']).toBe('noindex, nofollow');
@@ -61,4 +61,29 @@ test('public HTML and documents describe the showcase without account cookies', 
   expect(await privacy.text()).toContain('Витрина не обращается к базе аккаунтов и заказов');
   expect((await request.head('/api/ready')).status()).toBe(200);
   expect((await request.get('/prompts/no-such-prompt')).status()).toBe(404);
+});
+
+test('documents, direct support and itemized prices are reachable without an account', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Цены и тарифы', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Цены и тарифы', exact: true })).toBeVisible();
+  await expect(page.locator('.pricing-table tbody tr')).toHaveCount(6);
+  for (const row of await page.locator('.pricing-table tbody tr').all()) {
+    await expect(row.locator('td').last()).toContainText('500');
+    await expect(row.locator('td').last()).toContainText('однократно');
+  }
+  await expect(page.locator('.pricing-facts')).toContainText('Без подписки и автосписаний');
+  await expect(page.locator('.pricing-status')).toContainText('Реальная оплата пока отключена');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+  await page.locator('.pricing-support').getByRole('link', { name: 'Пользовательское соглашение' }).click();
+  await expect(page.getByRole('heading', { name: 'Пользовательское соглашение', exact: true })).toBeVisible();
+  await expect(page.locator('time')).toHaveAttribute('dateTime', '2026-10-23');
+  await expect(page.locator('.legal-draft')).toHaveCount(0);
+  await page.locator('.legal-nav').getByRole('link', { name: 'Политика конфиденциальности', exact: true }).click();
+  await expect(page.locator('.legal-page')).toContainText('Эскиев Тимур Бухариевич');
+  await expect(page.locator('.legal-draft')).toHaveCount(0);
+  await page.locator('.legal-nav').getByRole('link', { name: 'Контакты поддержки' }).click();
+  await expect(page.locator('.support-contact').getByRole('link', { name: 'promtmarket@mail.ru' })).toHaveAttribute('href', 'mailto:promtmarket@mail.ru');
+  await page.locator('.legal-nav').getByRole('link', { name: 'Условия приобретения промптов' }).click();
+  await expect(page.locator('.legal-draft')).toContainText('для согласования');
 });

@@ -6,6 +6,7 @@ import './neural-hero.css';
 import './account-hero.css';
 import './account-workspace.css';
 import './violet-theme.css';
+import './commerce-info.css';
 export const metadata: Metadata = {title:'ПромтМаркет | Промпты для ваших задач',description:'Готовые инструкции для AI: программирование, бизнес, маркетинг, изображения и видео.'};
 // The same image must respect the preview flag supplied at container startup.
 export const dynamic = 'force-dynamic';

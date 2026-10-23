@@ -10,9 +10,9 @@ export function middleware(request: NextRequest) {
   }
 
   const path = request.nextUrl.pathname;
-  const publicPage = ['/', '/catalog', '/catalog/collection', '/preview', '/api/ready'].includes(path)
+  const publicPage = ['/', '/catalog', '/catalog/collection', '/pricing', '/preview', '/api/ready'].includes(path)
     || /^\/prompts\/[a-z0-9][a-z0-9-]*$/.test(path)
-    || /^\/legal\/(privacy|offer|refunds|license|contacts)$/.test(path);
+    || /^\/legal\/(privacy|terms|offer|refunds|license|contacts)$/.test(path);
   const publicAsset = path.startsWith('/_next/static/') || path === '/_next/image'
     || /^\/images\/[a-zA-Z0-9/_-]+\.(png|webp)$/.test(path)
     || /^\/fonts\/[a-zA-Z0-9_-]+\.(ttf|txt)$/.test(path);
